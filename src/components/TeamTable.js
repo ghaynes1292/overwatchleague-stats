@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
+import Tooltip from 'material-ui/Tooltip';
+
+import MatchTooltip from './MatchTooltip';
 
 const styles = theme => ({
   root: {
@@ -24,11 +27,14 @@ const styles = theme => ({
     flex: '1 auto',
     borderLeft: '1px solid white',
     borderRight: '1px solid white',
+  },
+  tooltipOpen: {
+    backgroundColor: 'inherit'
   }
 });
 
 function SimpleTable(props) {
-  const { classes, teams } = props;
+  const { classes, teams, maps } = props;
 
   return (
     <Paper className={classes.root}>
@@ -42,14 +48,15 @@ function SimpleTable(props) {
             <TableCell padding="dense">Match Loss</TableCell>
             <TableCell padding="dense">Win%</TableCell>
             <TableCell padding="dense">Past Matches</TableCell>
-            <TableCell padding="dense">Map Win</TableCell>
-            <TableCell padding="dense">Map Loss</TableCell>
+            <TableCell padding="dense">Game Win</TableCell>
+            <TableCell padding="dense">Game Loss</TableCell>
             <TableCell padding="dense">Diff</TableCell>
+            <TableCell padding="dense">Next</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {teams.map((team, index) => {
-            const { ranking, completedMatches } = team;
+            const { ranking, completedMatches, nextMatches } = team;
             return (
               <TableRow key={team.id} className={classes.tableRow}>
                 <TableCell padding="dense">{index + 1}</TableCell>
@@ -72,6 +79,21 @@ function SimpleTable(props) {
                 <TableCell padding="dense">{ranking.gameWin}</TableCell>
                 <TableCell padding="dense">{ranking.gameLoss}</TableCell>
                 <TableCell padding="dense">{(ranking.gameWin - ranking.gameLoss)}</TableCell>
+                <TableCell padding="dense">
+                  <div className={classes.flexContainer}>
+                    {nextMatches.map(match =>
+                      <div key={match.startDate}>
+                        <Tooltip
+                          id="tooltip-icon"
+                          placement="bottom-start"
+                          classes={{ tooltipOpen: classes.tooltipOpen }}
+                          title={<MatchTooltip match={match} maps={maps} />}>
+                          <img width={35} src={match.competitor.icon}/>
+                        </Tooltip>
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
               </TableRow>
             );
           })}

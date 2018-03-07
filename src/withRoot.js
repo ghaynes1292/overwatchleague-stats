@@ -4,19 +4,19 @@ import purple from 'material-ui/colors/purple';
 import green from 'material-ui/colors/green';
 import Reboot from 'material-ui/Reboot';
 
+import { getRandomTeamColor } from './util';
+
 // A theme with custom primary and secondary color.
 // It's optional.
+
+const color = getRandomTeamColor();
 const theme = createMuiTheme({
   palette: {
     primary: {
-      light: purple[300],
-      main: purple[500],
-      dark: purple[700],
+      main: `#${color.primary}`,
     },
     secondary: {
-      light: green[300],
-      main: green[500],
-      dark: green[700],
+      main: `#${color.secondary}`,
     },
   },
 });
