@@ -6,6 +6,7 @@ import Paper from 'material-ui/Paper';
 import Tooltip from 'material-ui/Tooltip';
 
 import MatchTooltip from './MatchTooltip';
+import TeamTooltip from './TeamTooltip';
 
 const styles = theme => ({
   root: {
@@ -30,6 +31,12 @@ const styles = theme => ({
   },
   tooltipOpen: {
     backgroundColor: 'inherit'
+  },
+  red: {
+    color: 'red'
+  },
+  green: {
+    color: 'green'
   }
 });
 
@@ -57,10 +64,26 @@ function SimpleTable(props) {
         <TableBody>
           {teams.map((team, index) => {
             const { ranking, completedMatches, nextMatches } = team;
+            let diffColor;
+            if (ranking.gameWin - ranking.gameLoss === 0) {
+              diffColor = null
+            } else {
+              diffColor = (ranking.gameWin - ranking.gameLoss) > 0
+                ? classes.green
+                : classes.red
+            }
             return (
               <TableRow key={team.id} className={classes.tableRow}>
                 <TableCell padding="dense">{index + 1}</TableCell>
-                <TableCell padding="dense"><img width={35} src={team.icon}/></TableCell>
+                <TableCell padding="dense">
+                  <Tooltip
+                    id="tooltip-icon"
+                    placement="right-start"
+                    classes={{ tooltipOpen: classes.tooltipOpen }}
+                    title={<TeamTooltip team={team} />}>
+                    <img width={35} src={team.icon}/>
+                  </Tooltip>
+                </TableCell>
                 <TableCell padding="dense">{team.abbreviatedName}</TableCell>
                 <TableCell padding="dense">{ranking.matchWin}</TableCell>
                 <TableCell padding="dense">{ranking.matchLoss}</TableCell>
@@ -78,7 +101,11 @@ function SimpleTable(props) {
                 </TableCell>
                 <TableCell padding="dense">{ranking.gameWin}</TableCell>
                 <TableCell padding="dense">{ranking.gameLoss}</TableCell>
-                <TableCell padding="dense">{(ranking.gameWin - ranking.gameLoss)}</TableCell>
+                <TableCell
+                  padding="dense"
+                  className={diffColor}>
+                  {(ranking.gameWin - ranking.gameLoss)}
+                </TableCell>
                 <TableCell padding="dense">
                   <div className={classes.flexContainer}>
                     {nextMatches.map(match =>

@@ -1,7 +1,5 @@
 import React from 'react';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import purple from 'material-ui/colors/purple';
-import green from 'material-ui/colors/green';
 import Reboot from 'material-ui/Reboot';
 
 import { getRandomTeamColor } from './util';

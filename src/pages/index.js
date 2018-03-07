@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { CircularProgress } from 'material-ui/Progress';
+import Typography from 'material-ui/Typography';
 
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
@@ -25,7 +26,7 @@ const styles = theme => ({
 });
 
 const getCompletedMatches = (team) =>
-  orderBy(filter(team.schedule, ['state', 'CONCLUDED']), ['startDate'], ['asc'])
+  orderBy(filter(team.schedule, ({ state, conclusionStrategy }) => state === 'CONCLUDED' && conclusionStrategy === 'MINIMUM'), ['startDate'], ['asc'])
   .map(game => {
     return ({
       ...pick(game, ['competitors', 'games', 'startDate', 'endDate', 'id', 'scores', 'bracket']),
@@ -39,7 +40,7 @@ const getNextMatches = (team) =>
   .map(game => {
     return ({
       competitor: find(game.competitors, (competitor) => competitor.id !== team.id),
-      games: game.games.map(({ attributes, players, id, state, stats }) => ({ maps: attributes.map, players, id, state, stats })),
+      games: game.games.map(({ attributes, players, id, state }) => ({ maps: attributes.map, players, id, state })),
       startDate: game.startDate,
     })
   })
@@ -85,7 +86,12 @@ class Index extends React.Component {
     return (
       <div className={classes.root}>
         {loading
-          ? <CircularProgress className={classes.progress} size={50} />
+          ? <div>
+            <Typography variant="headline" gutterBottom align="center">
+              Loading the most up to date stats!
+            </Typography>
+            <CircularProgress className={classes.progress} size={50} />
+          </div>
           : <TeamTable teams={orderedTeams} maps={maps} />
         }
 

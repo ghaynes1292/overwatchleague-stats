@@ -2,11 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
-import GridList, { GridListTile } from 'material-ui/GridList';
+import GridList, { GridListTile, GridListTileBar } from 'material-ui/GridList';
 import Typography from 'material-ui/Typography';
-
-import find from 'lodash/find';
-import moment from 'moment';
 
 const styles = theme => ({
   root: {
@@ -16,22 +13,25 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper,
   },
   gridList: {
-    width: 450,
+    width: 750,
   },
 });
 
-function MatchTooltip(props) {
-  const { classes, match, maps } = props;
-
+function TeamTooltip(props) {
+  const { classes, team} = props;
   return (
     <Paper className={classes.root}>
       <Typography variant="headline" gutterBottom align="center">
-        Game Time: {moment(match.startDate).format('MM/DD/YY hh:MM a')}
+        {team.name}
       </Typography>
-      <GridList cellHeight={100} className={classes.gridList} cols={4}>
-        {match.games.map(game => (
-          <GridListTile key={game.id} cols={1}>
-            <img src={find(maps, ['id', game.maps]).thumbnail} />
+      <GridList cellHeight={110} className={classes.gridList} cols={6}>
+        {team.players.map(player => (
+          <GridListTile key={player.id}>
+            <img src={player.headshot} alt={player.name} />
+            <GridListTileBar
+              title={`${player.name}`}
+              subtitle={<span>{player.nationality}</span>}
+            />
           </GridListTile>
         ))}
       </GridList>
@@ -39,8 +39,8 @@ function MatchTooltip(props) {
   );
 }
 
-MatchTooltip.propTypes = {
+TeamTooltip.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(MatchTooltip);
+export default withStyles(styles)(TeamTooltip);
