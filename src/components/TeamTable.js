@@ -13,8 +13,12 @@ import TeamTooltip from './TeamTooltip';
 
 const styles = theme => ({
   root: {
-    width: '100%',
-    overflowX: 'auto',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    overflowX: 'hidden'
   },
   table: {
     minWidth: 200,
@@ -40,6 +44,10 @@ const styles = theme => ({
   },
   green: {
     color: 'green'
+  },
+  paddingDense: {
+    paddingLeft: '10px',
+    paddingRight: '10px'
   }
 });
 
@@ -47,23 +55,24 @@ const wrapInHidden = (component, props) => <Hidden {...props}>{component}</Hidde
 
 function SimpleTable(props) {
   const { classes, width, teams, maps } = props;
+  const { tableCell } = classes;
   console.log('width', width)
   return (
     <Paper className={classes.root}>
       <Table className={classes.table}>
         <TableHead>
           <TableRow>
-            {wrapInHidden(<TableCell padding="dense">Place</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense">Team</TableCell>, {})}
-            {wrapInHidden(<TableCell padding="dense"></TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense">Match Win</TableCell>, {})}
-            {wrapInHidden(<TableCell padding="dense">Match Loss</TableCell>, {})}
-            {wrapInHidden(<TableCell padding="dense">Win%</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense">Past Matches</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense">Game Win</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense">Game Loss</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense">Diff</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense">Next</TableCell>, {})}
+            {wrapInHidden(<TableCell>Place</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Team</TableCell>, {})}
+            {wrapInHidden(<TableCell></TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Match Win</TableCell>, {})}
+            {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Match Loss</TableCell>, {})}
+            {wrapInHidden(<TableCell>Win%</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell>Past Matches</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell>Game Win</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell>Game Loss</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Diff</TableCell>, {})}
+            {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Next</TableCell>, {})}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -73,16 +82,16 @@ function SimpleTable(props) {
             if (ranking.gameWin - ranking.gameLoss === 0) {
               diffColor = null
             } else {
-              diffColor = (ranking.gameWin - ranking.gameLoss) > 0
+              diffColor = (ranking.gameWin - ranking.gameLoss)> 0
                 ? classes.green
                 : classes.red
             }
             return (
               <TableRow key={team.id} className={classes.tableRow}>
-                {wrapInHidden(<TableCell padding="dense">
+                {wrapInHidden(<TableCell>
                   {index + 1}
                 </TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell padding="dense">
+                {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
                   <Tooltip
                     id="tooltip-icon"
                     placement="right-start"
@@ -91,13 +100,13 @@ function SimpleTable(props) {
                     <img width={35} src={team.icon}/>
                   </Tooltip>
                 </TableCell>, {})}
-                {wrapInHidden(<TableCell padding="dense">{team.abbreviatedName}</TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell padding="dense">{ranking.matchWin}</TableCell>, {})}
-                {wrapInHidden(<TableCell padding="dense">{ranking.matchLoss}</TableCell>, {})}
-                {wrapInHidden(<TableCell padding="dense">
+                {wrapInHidden(<TableCell>{team.abbreviatedName}</TableCell>, { only: 'xs' })}
+                {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>{ranking.matchWin}</TableCell>, {})}
+                {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>{ranking.matchLoss}</TableCell>, {})}
+                {wrapInHidden(<TableCell numeric>
                   {Math.round((ranking.matchWin * Math.pow(10, 1.00))/(ranking.matchWin + ranking.matchLoss) * Math.pow(10, 1.00))}
                 </TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell padding="dense">
+                {wrapInHidden(<TableCell numeric>
                   <div className={classes.flexContainer}>
                     {completedMatches.slice(-6).map(match =>
                       <div
@@ -108,14 +117,15 @@ function SimpleTable(props) {
                     )}
                   </div>
                 </TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell padding="dense">{ranking.gameWin}</TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell padding="dense">{ranking.gameLoss}</TableCell>, { only: 'xs' })}
+                {wrapInHidden(<TableCell numeric>{ranking.gameWin}</TableCell>, { only: 'xs' })}
+                {wrapInHidden(<TableCell numeric>{ranking.gameLoss}</TableCell>, { only: 'xs' })}
                 {wrapInHidden(<TableCell
-                  padding="dense"
+                  numeric
+                  padding="dense" classes={{ paddingDense: classes.paddingDense }}
                   className={diffColor}>
                   {(ranking.gameWin - ranking.gameLoss)}
-                </TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell padding="dense">
+                </TableCell>, {})}
+                {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
                   <div className={classes.flexContainer}>
                     {nextMatches.map(match =>
                       <div key={match.startDate}>
