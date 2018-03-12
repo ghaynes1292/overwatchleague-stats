@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import compose from 'recompose/compose';
 import { withStyles } from 'material-ui/styles';
+import withWidth from 'material-ui/utils/withWidth';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
 import Tooltip from 'material-ui/Tooltip';
+import Hidden from 'material-ui/Hidden';
 
 import MatchTooltip from './MatchTooltip';
 import TeamTooltip from './TeamTooltip';
@@ -40,25 +43,27 @@ const styles = theme => ({
   }
 });
 
-function SimpleTable(props) {
-  const { classes, teams, maps } = props;
+const wrapInHidden = (component, props) => <Hidden {...props}>{component}</Hidden>
 
+function SimpleTable(props) {
+  const { classes, width, teams, maps } = props;
+  console.log('width', width)
   return (
     <Paper className={classes.root}>
       <Table className={classes.table}>
         <TableHead>
           <TableRow>
-            <TableCell padding="dense">Place</TableCell>
-            <TableCell padding="dense">Team</TableCell>
-            <TableCell padding="dense"></TableCell>
-            <TableCell padding="dense">Match Win</TableCell>
-            <TableCell padding="dense">Match Loss</TableCell>
-            <TableCell padding="dense">Win%</TableCell>
-            <TableCell padding="dense">Past Matches</TableCell>
-            <TableCell padding="dense">Game Win</TableCell>
-            <TableCell padding="dense">Game Loss</TableCell>
-            <TableCell padding="dense">Diff</TableCell>
-            <TableCell padding="dense">Next</TableCell>
+            {wrapInHidden(<TableCell padding="dense">Place</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense">Team</TableCell>, {})}
+            {wrapInHidden(<TableCell padding="dense"></TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense">Match Win</TableCell>, {})}
+            {wrapInHidden(<TableCell padding="dense">Match Loss</TableCell>, {})}
+            {wrapInHidden(<TableCell padding="dense">Win%</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense">Past Matches</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense">Game Win</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense">Game Loss</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense">Diff</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense">Next</TableCell>, {})}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -74,8 +79,10 @@ function SimpleTable(props) {
             }
             return (
               <TableRow key={team.id} className={classes.tableRow}>
-                <TableCell padding="dense">{index + 1}</TableCell>
-                <TableCell padding="dense">
+                {wrapInHidden(<TableCell padding="dense">
+                  {index + 1}
+                </TableCell>, { only: 'xs' })}
+                {wrapInHidden(<TableCell padding="dense">
                   <Tooltip
                     id="tooltip-icon"
                     placement="right-start"
@@ -83,12 +90,14 @@ function SimpleTable(props) {
                     title={<TeamTooltip team={team} />}>
                     <img width={35} src={team.icon}/>
                   </Tooltip>
-                </TableCell>
-                <TableCell padding="dense">{team.abbreviatedName}</TableCell>
-                <TableCell padding="dense">{ranking.matchWin}</TableCell>
-                <TableCell padding="dense">{ranking.matchLoss}</TableCell>
-                <TableCell padding="dense">{Math.round((ranking.matchWin * Math.pow(10, 1.00))/(ranking.matchWin + ranking.matchLoss) * Math.pow(10, 1.00))}</TableCell>
-                <TableCell padding="dense">
+                </TableCell>, {})}
+                {wrapInHidden(<TableCell padding="dense">{team.abbreviatedName}</TableCell>, { only: 'xs' })}
+                {wrapInHidden(<TableCell padding="dense">{ranking.matchWin}</TableCell>, {})}
+                {wrapInHidden(<TableCell padding="dense">{ranking.matchLoss}</TableCell>, {})}
+                {wrapInHidden(<TableCell padding="dense">
+                  {Math.round((ranking.matchWin * Math.pow(10, 1.00))/(ranking.matchWin + ranking.matchLoss) * Math.pow(10, 1.00))}
+                </TableCell>, { only: 'xs' })}
+                {wrapInHidden(<TableCell padding="dense">
                   <div className={classes.flexContainer}>
                     {completedMatches.slice(-6).map(match =>
                       <div
@@ -98,15 +107,15 @@ function SimpleTable(props) {
                       />
                     )}
                   </div>
-                </TableCell>
-                <TableCell padding="dense">{ranking.gameWin}</TableCell>
-                <TableCell padding="dense">{ranking.gameLoss}</TableCell>
-                <TableCell
+                </TableCell>, { only: 'xs' })}
+                {wrapInHidden(<TableCell padding="dense">{ranking.gameWin}</TableCell>, { only: 'xs' })}
+                {wrapInHidden(<TableCell padding="dense">{ranking.gameLoss}</TableCell>, { only: 'xs' })}
+                {wrapInHidden(<TableCell
                   padding="dense"
                   className={diffColor}>
                   {(ranking.gameWin - ranking.gameLoss)}
-                </TableCell>
-                <TableCell padding="dense">
+                </TableCell>, { only: 'xs' })}
+                {wrapInHidden(<TableCell padding="dense">
                   <div className={classes.flexContainer}>
                     {nextMatches.map(match =>
                       <div key={match.startDate}>
@@ -120,7 +129,7 @@ function SimpleTable(props) {
                       </div>
                     )}
                   </div>
-                </TableCell>
+                </TableCell>, {})}
               </TableRow>
             );
           })}
@@ -134,4 +143,4 @@ SimpleTable.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SimpleTable);
+export default compose(withStyles(styles), withWidth())(SimpleTable);

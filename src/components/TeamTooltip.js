@@ -5,6 +5,15 @@ import Paper from 'material-ui/Paper';
 import GridList, { GridListTile, GridListTileBar } from 'material-ui/GridList';
 import Typography from 'material-ui/Typography';
 
+import { HealerIcon, FlexIcon, DpsIcon, TankIcon } from './RoleIcons';
+
+const roleMap = {
+  support: <HealerIcon />,
+  flex: <FlexIcon />,
+  offense: <DpsIcon />,
+  tank: <TankIcon />,
+}
+
 const styles = theme => ({
   root: {
     flexWrap: 'wrap',
@@ -18,7 +27,7 @@ const styles = theme => ({
 });
 
 function TeamTooltip(props) {
-  const { classes, team} = props;
+  const { classes, team } = props;
   return (
     <Paper className={classes.root}>
       <Typography variant="headline" gutterBottom align="center">
@@ -31,6 +40,7 @@ function TeamTooltip(props) {
             <GridListTileBar
               title={`${player.name}`}
               subtitle={<span>{player.nationality}</span>}
+              actionIcon={roleMap[player.attributes.role]}
             />
           </GridListTile>
         ))}
