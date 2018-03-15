@@ -82,7 +82,9 @@ function markMapWinner(match, team) {
 class TeamDialog extends React.Component {
   render() {
     const { classes, open, team, width, maps, opponent } = this.props;
-
+    if (!open) {
+      return null;
+    }
     return (
       <Dialog
         fullScreen
@@ -101,21 +103,23 @@ class TeamDialog extends React.Component {
           </Toolbar>
         </AppBar>
           <Paper className={classes.root}>
-            <GridList className={classes.gridList} cols={width === 'xs' ? 3.5 : 6.5}>
-              {team.players && team.players.map(player => (
-                <GridListTile key={player.id}>
-                  <img src={player.headshot} alt={player.name} />
-                  <GridListTileBar
-                    title={`${player.name}`}
-                    classes={{
-                      root: classes.titleBar,
-                    }}
-                    subtitle={<span>{player.nationality}</span>}
-                    actionIcon={roleMap[player.attributes.role]}
-                  />
-                </GridListTile>
-              ))}
-            </GridList>
+            {team.players && (
+              <GridList className={classes.gridList} cols={width === 'xs' ? 3.5 : 6.5}>
+                {team.players.map(player => (
+                  <GridListTile key={player.id}>
+                    <img src={player.headshot} alt={player.name} />
+                    <GridListTileBar
+                      title={`${player.name}`}
+                      classes={{
+                        root: classes.titleBar,
+                      }}
+                      subtitle={<span>{player.nationality}</span>}
+                      actionIcon={roleMap[player.attributes.role]}
+                    />
+                  </GridListTile>
+                ))}
+              </GridList>
+            )}
             <NextMatch team={team} />
             <GameGrid
               games={team.nextMatches && team.nextMatches[0].games.map(game => ({

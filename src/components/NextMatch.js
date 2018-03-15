@@ -6,7 +6,6 @@ import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 
 import moment from 'moment';
-import timer from 'moment-timer'
 
 const styles = {
   root: {
@@ -42,7 +41,13 @@ export default compose(
   withState('timer', 'setTimer', moment()),
   lifecycle({
     componentDidMount() {
-      moment.duration(1000).timer({ loop: true }, () => this.props.setTimer(moment()));
-    }
+      this.interval = setInterval(
+        () => this.props.setTimer(moment()),
+        1000
+      )
+    },
+    componentWillUnmount() {
+      clearInterval(this.interval)
+    },
   }),
 )(NextMatch);

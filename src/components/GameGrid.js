@@ -35,6 +35,9 @@ function getGameStats(team) {
 
 function NextMatch(props) {
   const { classes, games } = props;
+  if (!games) {
+    return null;
+  }
   return (
     <Paper className={classes.root}>
       <Table className={classes.table}>
