@@ -92,9 +92,8 @@ class Index extends React.Component {
             </Typography>
             <CircularProgress className={classes.progress} size={50} />
           </div>
-          : <TeamTable teams={orderedTeams} maps={maps} />
+          : <TeamTable teams={orderedTeams} maps={maps} collapsedIndex={1}/>
         }
-
       </div>
     );
   }

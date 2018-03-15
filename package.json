@@ -5,7 +5,9 @@
   "dependencies": {
     "lodash": "^4.17.5",
     "material-ui": "next",
+    "material-ui-icons": "^1.0.0-beta.36",
     "moment": "^2.21.0",
+    "moment-timer": "^1.2.2",
     "prop-types": "latest",
     "react": "latest",
     "react-dom": "latest",

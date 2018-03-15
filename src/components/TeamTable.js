@@ -1,15 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import compose from 'recompose/compose';
+import { compose, withState } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import withWidth from 'material-ui/utils/withWidth';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
-import Tooltip from 'material-ui/Tooltip';
 import Hidden from 'material-ui/Hidden';
+import find from 'lodash/find';
 
-import MatchTooltip from './MatchTooltip';
-import TeamTooltip from './TeamTooltip';
+import TeamDialog from './TeamDialog';
 
 const styles = theme => ({
   root: {
@@ -54,24 +53,23 @@ const styles = theme => ({
 const wrapInHidden = (component, props) => <Hidden {...props}>{component}</Hidden>
 
 function SimpleTable(props) {
-  const { classes, width, teams, maps } = props;
-  const { tableCell } = classes;
+  const { classes, width, teams, maps, teamProp, setTeam, opponent, setOpponent } = props;
   console.log('width', width)
   return (
     <Paper className={classes.root}>
       <Table className={classes.table}>
         <TableHead>
           <TableRow>
-            {wrapInHidden(<TableCell>Place</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense">Place</TableCell>, { only: 'xs' })}
             {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Team</TableCell>, {})}
             {wrapInHidden(<TableCell></TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Match Win</TableCell>, {})}
-            {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Match Loss</TableCell>, {})}
-            {wrapInHidden(<TableCell>Win%</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell>Past Matches</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell>Game Win</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell>Game Loss</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Diff</TableCell>, {})}
+            {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>Match Win</TableCell>, {})}
+            {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>Match Loss</TableCell>, {})}
+            {wrapInHidden(<TableCell numeric>Win%</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell padding="dense">Past Matches</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell numeric>Game Win</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell numeric>Game Loss</TableCell>, { only: 'xs' })}
+            {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>Diff</TableCell>, {})}
             {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Next</TableCell>, {})}
           </TableRow>
         </TableHead>
@@ -87,18 +85,15 @@ function SimpleTable(props) {
                 : classes.red
             }
             return (
-              <TableRow key={team.id} className={classes.tableRow}>
-                {wrapInHidden(<TableCell>
+              <TableRow key={team.id} className={classes.tableRow} onClick={() => {
+                setTeam(team)
+                setOpponent(find(teams, ['id', team.nextMatches[0].competitor.id]))
+              }}>
+                {wrapInHidden(<TableCell padding="dense">
                   {index + 1}
                 </TableCell>, { only: 'xs' })}
                 {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
-                  <Tooltip
-                    id="tooltip-icon"
-                    placement="right-start"
-                    classes={{ tooltipOpen: classes.tooltipOpen }}
-                    title={<TeamTooltip team={team} />}>
-                    <img width={35} src={team.icon}/>
-                  </Tooltip>
+                  <img width={35} src={team.icon}/>
                 </TableCell>, {})}
                 {wrapInHidden(<TableCell>{team.abbreviatedName}</TableCell>, { only: 'xs' })}
                 {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>{ranking.matchWin}</TableCell>, {})}
@@ -106,13 +101,13 @@ function SimpleTable(props) {
                 {wrapInHidden(<TableCell numeric>
                   {Math.round((ranking.matchWin * Math.pow(10, 1.00))/(ranking.matchWin + ranking.matchLoss) * Math.pow(10, 1.00))}
                 </TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell numeric>
+                {wrapInHidden(<TableCell numeric padding="dense">
                   <div className={classes.flexContainer}>
                     {completedMatches.slice(-6).map(match =>
                       <div
                         key={match.id}
                         className={classes.flexMark}
-                        style={{ backgroundColor: match.winner ? 'rgb(169, 208, 142)' : 'rgb(255, 232, 235)' }}
+                        style={{ backgroundColor: match.winner ? 'rgb(112, 219, 112)' : 'rgb(219, 112, 112)' }}
                       />
                     )}
                   </div>
@@ -129,13 +124,7 @@ function SimpleTable(props) {
                   <div className={classes.flexContainer}>
                     {nextMatches.map(match =>
                       <div key={match.startDate}>
-                        <Tooltip
-                          id="tooltip-icon"
-                          placement="bottom-start"
-                          classes={{ tooltipOpen: classes.tooltipOpen }}
-                          title={<MatchTooltip match={match} maps={maps} />}>
-                          <img width={35} src={match.competitor.icon}/>
-                        </Tooltip>
+                        <img width={35} src={match.competitor.icon}/>
                       </div>
                     )}
                   </div>
@@ -145,6 +134,14 @@ function SimpleTable(props) {
           })}
         </TableBody>
       </Table>
+      <TeamDialog
+        team={teamProp || {}}
+        opponent={opponent || {}}
+        open={!!teamProp}
+        handleClose={() => setTeam(null)}
+        width={width}
+        maps={maps}
+      />
     </Paper>
   );
 }
@@ -153,4 +150,9 @@ SimpleTable.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default compose(withStyles(styles), withWidth())(SimpleTable);
+export default compose(
+  withStyles(styles),
+  withWidth(),
+  withState('teamProp', 'setTeam', null),
+  withState('opponent', 'setOpponent', null),
+)(SimpleTable);

@@ -1,9 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import Paper from 'material-ui/Paper';
-import GridList, { GridListTile, GridListTileBar } from 'material-ui/GridList';
-import Typography from 'material-ui/Typography';
 import SvgIcon from 'material-ui/SvgIcon';
 
 const styles = theme => ({
