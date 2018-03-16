@@ -13,7 +13,7 @@ import TeamDialog from './TeamDialog';
 const styles = theme => ({
   root: {
     position: 'absolute',
-    top: 0,
+    top: '14px',
     bottom: 0,
     left: 0,
     right: 0,

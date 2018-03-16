@@ -1,5 +1,20 @@
 import sample from 'lodash/sample';
 
+export const teamsNumbers = [
+  'team0',
+  'team1',
+  'team2',
+  'team3',
+  'team4',
+  'team5',
+  'team6',
+  'team7',
+  'team8',
+  'team9',
+  'team10',
+  'team11',
+]
+
 const teamColors = [
   { primary: '0c2340', secondary: '0072ce' },
   { primary: 'ff9e1b', secondary: '000000' },
@@ -14,5 +29,70 @@ const teamColors = [
   { primary: 'aa8a00', secondary: '000000' },
   { primary: 'ff8200', secondary: '59cbe8' },
 ]
+
+export const teamFields = [
+  'abbreviatedName',
+  'addressCountry',
+  'description',
+  'handle',
+  'homeLocation',
+  'icon',
+  'id',
+  'logo',
+  'name',
+  'placement',
+  'players',
+  'primaryColor',
+  'ranking',
+  'schedule',
+  'secondaryColor',
+  'secondaryPhoto',
+  'type'
+];
+
+export const playerFields = [
+  'accounts',
+  'attributes',
+  'familyName',
+  'givenName',
+  'handle',
+  'headshot',
+  'homeLocation',
+  'id',
+  'name',
+  'nationality',
+  'type'
+];
+
+export const scheduleFields = [
+  'competitors',
+  'conclusionStrategy',
+  'dateCreated',
+  'endDate',
+  'games',
+  'id',
+  'scores',
+  'startDate',
+  'state',
+  'winner',
+];
+
+export const competitorFields = [
+  'abbreviatedName',
+  'icon',
+  'id',
+  'logo',
+  'name',
+  'primaryColor',
+  'secondaryColor',
+  'secondaryColor'
+];
+
+export const gameFields = [
+  'attributes',
+  'id',
+  'points',
+  'state'
+];
 
 export const getRandomTeamColor = () => sample(teamColors);

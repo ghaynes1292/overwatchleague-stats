@@ -9,8 +9,10 @@ import pick from 'lodash/pick';
 import orderBy from 'lodash/orderBy';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
+import moment from 'moment';
 
 import withRoot from '../withRoot';
+import { teamFields, playerFields, scheduleFields, competitorFields, gameFields, teamsNumbers } from '../util';
 
 import TeamTable from '../components/TeamTable';
 
@@ -23,6 +25,9 @@ const styles = theme => ({
   progress: {
     margin: theme.spacing.unit * 2,
   },
+  typography: {
+    fontSize: '12px'
+  }
 });
 
 const getCompletedMatches = (team) =>
@@ -54,29 +59,51 @@ class Index extends React.Component {
   state = {
     open: false,
     teams: [],
-    maps: []
+    maps: [],
+    lastFetchedTime: null,
+    backgroundLoading: false
   };
 
-  async componentDidMount() {
+  async componentWillMount() {
     this.setState({
-      loading: true
+      loading: true,
+      backgroundLoading: true
     })
-    const teamContent = await fetchEndpoint('teams');
-    const maps = await fetchEndpoint('maps');
-    const teams = await Promise.all(teamContent.competitors.map(competitor =>
-      fetchEndpoint(`team/${competitor.competitor.id}`)
-      .then(team => omit(team, ['attributes', 'advantage', 'aboutUrl', 'accounts', 'availableLanguages']))
-    ))
+    const localTeams = teamsNumbers.map((num) => JSON.parse(localStorage.getItem(num)));
+    const lastFetchedTime = localStorage.getItem('lastFetchedTime')
     this.setState({
-      teams,
-      maps,
-      loading: false
+      loading: false,
+      teams: localTeams,
+      lastFetchedTime,
     })
+    fetchEndpoint('teams').then(teams => {
+      Promise.all(teams.competitors.map(competitor =>
+        fetchEndpoint(`team/${competitor.competitor.id}`)
+        .then(team => omit(team, ['attributes', 'advantage', 'aboutUrl', 'accounts', 'availableLanguages']))
+      )).then(teams => {
+        const trimmedTeams = teams.map(team => ({
+          ...pick(team, teamFields),
+          players: team.players.map(player => pick(player, playerFields)),
+          schedule: team.schedule.map(game => ({
+            ...pick(game, scheduleFields),
+            competitors: game.competitors.map(competitor => pick(competitor, competitorFields)),
+            games: game.games.map(game => pick(game, gameFields)),
+          })),
+        }))
+        const time = moment().format('DD/MM/YYYY HH:MM:SS')
+        trimmedTeams.map((team, index) => { localStorage.setItem(`team${index}`, JSON.stringify(team)); })
+        localStorage.setItem('lastFetchedTime', time);
+        this.setState({ teams, backgroundLoading: false, lastFetchedTime: time })
+      })
+    });
+    fetchEndpoint('maps').then(maps => {
+      this.setState({ maps })
+    });
   }
 
   render() {
     const { classes } = this.props;
-    const { teams, maps, loading } = this.state;
+    const { teams, maps, loading, lastFetchedTime, backgroundLoading } = this.state;
     const newTeams = teams.map(team => ({
       ...team,
       completedMatches: getCompletedMatches(team),
@@ -92,7 +119,15 @@ class Index extends React.Component {
             </Typography>
             <CircularProgress className={classes.progress} size={50} />
           </div>
-          : <TeamTable teams={orderedTeams} maps={maps} collapsedIndex={1}/>
+          : <div>
+            <Typography variant="body1" align="left" className={classes.typography}>
+              {backgroundLoading && 'Updating in background...'}
+            </Typography>
+            <Typography variant="body1" align="right" className={classes.typography}>
+              Last Updated:{lastFetchedTime}
+            </Typography>
+            <TeamTable teams={orderedTeams} maps={maps} collapsedIndex={1}/>
+          </div>
         }
       </div>
     );
