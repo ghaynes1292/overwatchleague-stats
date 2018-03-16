@@ -9,6 +9,7 @@ import pick from 'lodash/pick';
 import orderBy from 'lodash/orderBy';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
+import compact from 'lodash/compact';
 import moment from 'moment';
 
 import withRoot from '../withRoot';
@@ -73,7 +74,7 @@ class Index extends React.Component {
     const lastFetchedTime = localStorage.getItem('lastFetchedTime')
     this.setState({
       loading: false,
-      teams: localTeams,
+      teams: compact(localTeams),
       lastFetchedTime,
     })
     fetchEndpoint('teams').then(teams => {
@@ -112,10 +113,10 @@ class Index extends React.Component {
     const orderedTeams = orderBy(newTeams, ['ranking.matchWin', 'ranking.gameWin'], ['desc', 'desc']);
     return (
       <div className={classes.root}>
-        {loading
+        {loading || teams.length === 0
           ? <div>
             <Typography variant="headline" gutterBottom align="center">
-              Loading the most up to date stats!
+              Loading the most up to date stats...
             </Typography>
             <CircularProgress className={classes.progress} size={50} />
           </div>
