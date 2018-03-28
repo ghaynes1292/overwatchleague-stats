@@ -10,8 +10,8 @@ import moment from 'moment';
 const styles = {
   root: {
     display: 'flex',
-    width: '225px',
-    height: '60px',
+    width: '300px',
+    height: '50px',
     margin: 'auto'
   },
   typography: {
@@ -20,14 +20,14 @@ const styles = {
 };
 
 function NextMatch(props) {
-  const { classes, team, timer } = props;
+  const { classes, team } = props;
   return (
     <Paper elevation={4} className={classes.root}>
-      <img width={35} src={team.icon}/>
+      <img width={40} src={team.icon}/>
       <Typography variant="headline" gutterBottom align="center" className={classes.typography}>
-        {timer.to(moment(team.nextMatches && team.nextMatches[0].startDate))}
+        {moment(team.nextMatches && team.nextMatches[0].startDate).startOf('hour').format('ddd hh:MM A')}
       </Typography>
-      <img width={35} src={team.nextMatches && team.nextMatches[0].competitor.icon}/>
+      <img width={40} src={team.nextMatches && team.nextMatches[0].competitor.icon}/>
     </Paper>
   );
 }
@@ -38,16 +38,4 @@ NextMatch.propTypes = {
 
 export default compose(
   withStyles(styles),
-  withState('timer', 'setTimer', moment()),
-  lifecycle({
-    componentDidMount() {
-      this.interval = setInterval(
-        () => this.props.setTimer(moment()),
-        1000
-      )
-    },
-    componentWillUnmount() {
-      clearInterval(this.interval)
-    },
-  }),
 )(NextMatch);

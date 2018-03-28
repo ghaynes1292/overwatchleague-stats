@@ -14,15 +14,12 @@ const styles = {
     width: '100%',
     overflowX: 'auto',
   },
-  table: {
-    minWidth: 200,
-  },
   center: {
     textAlign: 'center'
   },
   flex: {
     display: 'flex',
-    justifyContent: 'space-between'
+    justifyContent: 'space-around'
   }
 };
 
@@ -40,44 +37,23 @@ function NextMatch(props) {
   }
   return (
     <Paper className={classes.root}>
-      <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell padding="dense">
+      <div>
+        {games.map(game => {
+          const teamStats = getGameStats(game.team)
+          const opponentStats = getGameStats(game.opponent)
+          return (
+            <Paper className={classes.flex}>
               <Typography variant="subheading">
-                Wins / Loss / Draw
+                {teamStats.wins} / {teamStats.losses} / {teamStats.draws}
               </Typography>
-            </TableCell>
-            <TableCell padding="dense" className={classes.center}>Map</TableCell>
-            <TableCell padding="dense" numeric>
+              <img src={game.icon} width={200} height={100}/>
               <Typography variant="subheading">
-                Wins / Loss / Draw
+                {opponentStats.wins} / {opponentStats.losses} / {opponentStats.draws}
               </Typography>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {games.map(game => {
-            const teamStats = getGameStats(game.team)
-            const opponentStats = getGameStats(game.opponent)
-            return (
-              <TableRow key={game.icon}>
-                <TableCell padding="dense" >
-                  <Typography variant="subheading">
-                    {teamStats.wins} / {teamStats.losses} / {teamStats.draws}
-                  </Typography>
-                </TableCell>
-                <TableCell padding="dense" className={classes.center}><img src={game.icon} width={65} height={45}/></TableCell>
-                <TableCell padding="dense" numeric>
-                  <Typography variant="subheading">
-                    {opponentStats.wins} / {opponentStats.losses} / {opponentStats.draws}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+            </Paper>
+          );
+        })}
+      </div>
     </Paper>
   );
 }

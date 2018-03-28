@@ -95,4 +95,6 @@ export const gameFields = [
   'state'
 ];
 
+export const brokenImage = "https://i.pinimg.com/originals/e5/b3/bf/e5b3bf0dac03331937c2e783a42d5bac.jpg"
+
 export const getRandomTeamColor = () => sample(teamColors);

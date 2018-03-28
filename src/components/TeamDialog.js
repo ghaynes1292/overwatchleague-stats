@@ -20,12 +20,14 @@ import NextMatch from './NextMatch';
 import GameGrid from './GameGrid';
 import { HealerIcon, FlexIcon, DpsIcon, TankIcon } from './RoleIcons';
 
+import { brokenImage } from '../util'
+
 const roleMap = {
   support: <HealerIcon />,
   flex: <FlexIcon />,
   offense: <DpsIcon />,
   tank: <TankIcon />,
-}
+};
 
 const styles = {
   appBar: {
@@ -41,13 +43,14 @@ const styles = {
   },
   gridList: {
     flexWrap: 'nowrap',
-    // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
     transform: 'translateZ(0)',
     color: 'white'
   },
   titleBar: {
-    background:
-      'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+    background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+  },
+  imageTile: {
+    top: '60%'
   },
 };
 
@@ -70,12 +73,15 @@ function markMapWinner(match, team) {
   const winner = match.scores[0] > match.scores[1] ? 'team1' : 'team2';
   const loser = match.scores[0] > match.scores[1] ? 'team2' : 'team1';
   const myTeam = match.winner ? winner : loser;
-  const newMatch = { ... match, games: match.games.map(game => {
-    const teamWon = game.attributes.mapScore.team1 > game.attributes.mapScore.team2
-      ? 'team1'
-      : 'team2';
-    return ({ ...game, winner: myTeam === teamWon })
-  })}
+  const newMatch = {
+    ...match,
+    games: match.games.map(game => {
+      const teamWon = game.attributes.mapScore.team1 > game.attributes.mapScore.team2
+        ? 'team1'
+        : 'team2';
+      return ({ ...game, winner: myTeam === teamWon })
+    })
+  }
   return newMatch;
 }
 
@@ -102,33 +108,38 @@ class TeamDialog extends React.Component {
             </Typography>
           </Toolbar>
         </AppBar>
-          <Paper className={classes.root}>
-            {team.players && (
-              <GridList className={classes.gridList} cols={width === 'xs' ? 3.5 : 6.5}>
-                {team.players.map(player => (
-                  <GridListTile key={player.id}>
-                    <img src={player.headshot} alt={player.name} />
-                    <GridListTileBar
-                      title={`${player.name}`}
-                      classes={{
-                        root: classes.titleBar,
-                      }}
-                      subtitle={<span>{player.nationality}</span>}
-                      actionIcon={roleMap[player.attributes.role]}
-                    />
-                  </GridListTile>
-                ))}
-              </GridList>
-            )}
-            <NextMatch team={team} />
-            <GameGrid
-              games={team.nextMatches && team.nextMatches[0].games.map(game => ({
+        <Paper className={classes.root}>
+          {team.players && (
+            <GridList cellHeight={125} className={classes.gridList} cols={width === 'xs' ? 3.5 : 6.5}>
+              {team.players.map(player => (
+                <GridListTile key={player.id} classes={{ imgFullWidth: classes.imageTile }}>
+                  <img src={player.headshot} alt={player.name} />
+                  <GridListTileBar
+                    title={`${player.name}`}
+                    classes={{
+                      root: classes.titleBar,
+                    }}
+                    subtitle={<span>{player.nationality}</span>}
+                    actionIcon={roleMap[player.attributes.role]}
+                  />
+                </GridListTile>
+              ))}
+            </GridList>
+          )}
+          <NextMatch team={team} />
+          <GameGrid
+            games={team.nextMatches && team.nextMatches[0].games.map(game => {
+              console.log('game', game)
+              const map = find(maps, ['id', game.maps])
+              const icon = map ? map.thumbnail : brokenImage
+              return ({
                 team: GetCompletedGamesFromMap(game.maps, team),
                 opponent: GetCompletedGamesFromMap(game.maps, opponent),
-                icon: find(maps, ['id', game.maps]).thumbnail
-              }))}
-            />
-          </Paper>
+                icon
+              })
+            })}
+          />
+        </Paper>
       </Dialog>
     );
   }
