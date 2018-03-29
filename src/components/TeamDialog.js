@@ -38,6 +38,7 @@ const styles = {
   },
   root: {
     flexWrap: 'wrap',
+    height: 'inherit',
     justifyContent: 'space-around',
     backgroundColor: `#F1F1F1`,
     backgroundImage: 'url(https://styleguide.overwatchleague.com/assets/toolkit/images/background/OWL-LBG-2.jpg)',
