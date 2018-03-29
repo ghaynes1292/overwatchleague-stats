@@ -39,7 +39,10 @@ const styles = {
   root: {
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    overflow: 'hidden',
+    backgroundColor: `#F1F1F1`,
+    backgroundImage: 'url(https://styleguide.overwatchleague.com/assets/toolkit/images/background/OWL-LBG-2.jpg)',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: '50% -18%',
   },
   gridList: {
     flexWrap: 'nowrap',
@@ -87,8 +90,8 @@ function markMapWinner(match, team) {
 
 class TeamDialog extends React.Component {
   render() {
-    const { classes, open, team, width, maps, opponent } = this.props;
-    console.log(team, opponent)
+    const { classes, open, team, width, maps, opponent, size } = this.props;
+
     if (!open) {
       return null;
     }
@@ -127,20 +130,23 @@ class TeamDialog extends React.Component {
               ))}
             </GridList>
           )}
-          <MatchPreview team={team} opponent={opponent} />
-          {/* <NextMatch team={team} />
+          <MatchPreview team={team} opponent={opponent} size={size} />
           <GameGrid
-            games={team.nextMatches && team.nextMatches[0].games.map(game => {
-              console.log('game', game)
+            team={team}
+            opponent={opponent}
+            games={team.nextMatches && team.nextMatches[0].games.map((game, index) => {
               const map = find(maps, ['id', game.maps])
               const icon = map ? map.thumbnail : brokenImage
+              const mapName = map ? map.name.en_US : 'No Name'
               return ({
                 team: GetCompletedGamesFromMap(game.maps, team),
                 opponent: GetCompletedGamesFromMap(game.maps, opponent),
-                icon
+                icon,
+                mapName,
+                index
               })
             })}
-          /> */}
+          />
         </Paper>
       </Dialog>
     );

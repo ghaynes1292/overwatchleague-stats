@@ -51,6 +51,18 @@ const getNextMatches = (team) =>
     })
   })
 
+const getTeamContent = (team) => {
+  if (!team.content) {
+    return {}
+  }
+  return {
+    primaryColor: find(team.content.colors, ['usage', 'primary']).color.color,
+    secondaryColor: find(team.content.colors, ['usage', 'secondary']).color.color,
+    mainLogo: find(team.content.icons, ['usage', 'main']).png,
+    altLogo: find(team.content.icons, ['usage', 'alt']) && find(team.content.icons, ['usage', 'alt']).png,
+    nameLogo: find(team.content.icons, ['usage', 'mainName']).png,
+  }
+}
 
 const fetchEndpoint = (endpoint) =>
   fetch(`${OWL_API_URL}/${endpoint}`)
@@ -84,11 +96,7 @@ class Index extends React.Component {
       )).then(teams => {
         const trimmedTeams = teams.map(team => ({
           ...pick(team, teamFields),
-          primaryColor: find(team.content.colors, ['usage', 'primary']).color.color,
-          secondaryColor: find(team.content.colors, ['usage', 'secondary']).color.color,
-          mainLogo: find(team.content.icons, ['usage', 'main']).png,
-          altLogo: find(team.content.icons, ['usage', 'alt']) && find(team.content.icons, ['usage', 'alt']).png,
-          nameLogo: find(team.content.icons, ['usage', 'mainName']).png,
+          ...getTeamContent(team),
           players: team.players.map(player => pick(player, playerFields)),
           schedule: team.schedule.map(game => ({
             ...pick(game, scheduleFields),
@@ -96,7 +104,6 @@ class Index extends React.Component {
             games: game.games.map(game => pick(game, gameFields)),
           })),
         }))
-        console.log('trimmed teams!', trimmedTeams)
         const time = moment().format('DD/MM/YYYY HH:MM:SS')
         trimmedTeams.map((team, index) => { localStorage.setItem(`team${index}`, JSON.stringify(team)); })
         localStorage.setItem('lastFetchedTime', time);

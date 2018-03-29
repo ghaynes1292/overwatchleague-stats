@@ -141,6 +141,7 @@ function SimpleTable(props) {
         handleClose={() => setTeam(null)}
         width={width}
         maps={maps}
+        size={width}
       />
     </Paper>
   );

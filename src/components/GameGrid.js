@@ -2,17 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withStyles } from 'material-ui/styles';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
-
-import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 
 import filter from 'lodash/filter';
 
+import GameComponent from './GameComponent';
+
 const styles = {
   root: {
-    width: '100%',
+    width: '95%',
+    margin: 'auto',
     overflowX: 'auto',
+    display: 'flex',
+    flexWrap: 'wrap',
   },
   center: {
     textAlign: 'center'
@@ -30,38 +31,35 @@ function getGameStats(team) {
   return { wins, draws, losses }
 }
 
-function NextMatch(props) {
-  const { classes, games } = props;
+function GameGrid(props) {
+  const { classes, games, team, opponent } = props;
   if (!games) {
     return null;
   }
   return (
-    <Paper className={classes.root}>
-      <div>
-        {games.map(game => {
-          const teamStats = getGameStats(game.team)
-          const opponentStats = getGameStats(game.opponent)
-          return (
-            <Paper className={classes.flex}>
-              <Typography variant="subheading">
-                {teamStats.wins} / {teamStats.losses} / {teamStats.draws}
-              </Typography>
-              <img src={game.icon} width={200} height={100}/>
-              <Typography variant="subheading">
-                {opponentStats.wins} / {opponentStats.losses} / {opponentStats.draws}
-              </Typography>
-            </Paper>
-          );
-        })}
-      </div>
-    </Paper>
+    <div className={classes.root}>
+      {games.map(game => {
+        const teamStats = getGameStats(game.team)
+        const opponentStats = getGameStats(game.opponent)
+        return (
+          <GameComponent
+            key={game.index}
+            game={game}
+            team={team}
+            opponent={opponent}
+            teamStats={teamStats}
+            opponentStats={opponentStats}
+          />
+        );
+      })}
+    </div>
   );
 }
 
-NextMatch.propTypes = {
+GameGrid.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
 export default compose(
   withStyles(styles),
-)(NextMatch);
+)(GameGrid);
