@@ -20,7 +20,7 @@ import MatchPreview from './MatchPreview';
 import GameGrid from './GameGrid';
 import { HealerIcon, FlexIcon, DpsIcon, TankIcon } from './RoleIcons';
 
-import { brokenImage } from '../util'
+import { brokenImage, getTextColor } from '../util'
 
 const roleMap = {
   support: <HealerIcon />,
@@ -104,7 +104,7 @@ class TeamDialog extends React.Component {
         transition={Transition}
       >
         <AppBar className={classes.appBar}>
-          <Toolbar style={{ backgroundColor: team.secondaryColor, color: team.primaryColor }}>
+          <Toolbar style={{ backgroundColor: team.secondaryColor, color: getTextColor(team.secondaryColor) }}>
             <IconButton color="inherit" onClick={this.props.handleClose} aria-label="Close">
               <CloseIcon />
             </IconButton>

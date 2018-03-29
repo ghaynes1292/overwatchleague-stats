@@ -7,6 +7,8 @@ import Typography from 'material-ui/Typography';
 
 import moment from 'moment';
 
+import { getTextColor } from '../util';
+
 const styles = {
   root: {
     display: 'flex',
@@ -74,12 +76,18 @@ const styles = {
     gridArea: 'status',
     gridColumn: 2,
     padding: '1% 2%',
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
+  hourMinutes: {
+    display: 'flex',
+    flexDirection: 'column',
   }
 };
 
 function NextMatch(props) {
   const { classes, team, opponent, size } = props;
-
+  const gameTime = moment(team.nextMatches && team.nextMatches[0].startDate);
   return (
     <div className={classes.headerContainer}>
       <div className={classes.headerTeam} style={{ backgroundColor: team.primaryColor }}/>
@@ -88,7 +96,7 @@ function NextMatch(props) {
         <div className={classes.teamHeader}>
           <div className={classes.teamTitle} style={{ flexDirection: size === 'xs' ? 'column' : 'row' }}>
             <img className={classes.teamImage} src={team.altLogo || team.mainLogo}/>
-            <Typography variant="title" gutterBottom>
+            <Typography variant="title" gutterBottom style={{ color: getTextColor(team.primaryColor) }}>
               {size === 'xs' ? team.abbreviatedName : team.name}
             </Typography>
           </div>
@@ -104,15 +112,36 @@ function NextMatch(props) {
           </div>
           <div className={classes.teamTitle} style={{ flexDirection: size === 'xs' ? 'column' : 'row-reverse' }}>
             <img className={classes.teamImage} src={opponent.altLogo || opponent.mainLogo}/>
-            <Typography variant="title" gutterBottom>
+            <Typography variant="title" gutterBottom style={{ color: getTextColor(opponent.primaryColor) }}>
               {size === 'xs' ? opponent.abbreviatedName : opponent.name}
             </Typography>
           </div>
         </div>
         <Paper elevation={4} className={classes.gameStatus}>
-          <Typography variant="headline" gutterBottom align="center" className={classes.typography}>
-            {moment(team.nextMatches && team.nextMatches[0].startDate).startOf('hour').format('ddd hh:MM')}
-          </Typography>
+          <div className={classes.hourMinutes}>
+            <Typography variant="headline" gutterBottom align="center">
+              {gameTime.diff(moment(), 'days')}
+            </Typography>
+            <Typography gutterBottom align="center">
+              Days
+            </Typography>
+          </div>
+          <div className={classes.hourMinutes}>
+            <Typography variant="headline" gutterBottom align="center">
+              {gameTime.diff(moment(), 'hours') % 24}
+            </Typography>
+            <Typography gutterBottom align="center">
+              Hours
+            </Typography>
+          </div>
+          <div className={classes.hourMinutes}>
+            <Typography variant="headline" gutterBottom align="center">
+              {gameTime.diff(moment(), 'minutes') % 60}
+            </Typography>
+            <Typography gutterBottom align="center">
+              Mins
+            </Typography>
+          </div>
         </Paper>
       </div>
     </div>

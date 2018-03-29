@@ -51,6 +51,9 @@ const styles = {
   teamImage: {
     maxWidth: '45px',
   },
+  minTextWidth: {
+    minWidth: '100px',
+  },
 };
 
 function GameComponent(props) {
@@ -63,7 +66,7 @@ function GameComponent(props) {
         <Typography variant="subheading" gutterBottom>
           {`Game ${game.index + 1}`}
         </Typography>
-        <Typography variant="subheading" gutterBottom>
+        <Typography variant="subheading" gutterBottom align="right" className={classes.minTextWidth}>
           {game.mapName}
         </Typography>
       </div>
@@ -72,9 +75,6 @@ function GameComponent(props) {
           <img className={classes.teamImage} src={team.altLogo || team.mainLogo}/>
         </div>
         <Typography variant="subheading" gutterBottom>
-          {team.abbreviatedName}
-        </Typography>
-        <Typography variant="subheading" gutterBottom>
           {`W: ${teamStats.wins} L: ${teamStats.losses} D: ${teamStats.draws}`}
         </Typography>
       </div>
@@ -82,9 +82,6 @@ function GameComponent(props) {
         <div style={{ backgroundColor: opponent.primaryColor }}>
           <img className={classes.teamImage} src={opponent.altLogo || opponent.mainLogo}/>
         </div>
-        <Typography variant="subheading" gutterBottom>
-          {opponent.abbreviatedName}
-        </Typography>
         <Typography variant="subheading" gutterBottom>
           {`W: ${opponentStats.wins} L: ${opponentStats.losses} D: ${opponentStats.draws}`}
         </Typography>

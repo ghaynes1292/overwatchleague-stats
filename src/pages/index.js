@@ -58,6 +58,7 @@ const getTeamContent = (team) => {
   return {
     primaryColor: find(team.content.colors, ['usage', 'primary']).color.color,
     secondaryColor: find(team.content.colors, ['usage', 'secondary']).color.color,
+    tertiaryColor: find(team.content.colors, ['usage', 'tertiary']).color.color,
     mainLogo: find(team.content.icons, ['usage', 'main']).png,
     altLogo: find(team.content.icons, ['usage', 'alt']) && find(team.content.icons, ['usage', 'alt']).png,
     nameLogo: find(team.content.icons, ['usage', 'mainName']).png,
