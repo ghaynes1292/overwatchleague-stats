@@ -93,7 +93,7 @@ function SimpleTable(props) {
                   {index + 1}
                 </TableCell>, { only: 'xs' })}
                 {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
-                  <img width={35} src={team.icon}/>
+                  <img width={35} src={team.mainLogo}/>
                 </TableCell>, {})}
                 {wrapInHidden(<TableCell>{team.abbreviatedName}</TableCell>, { only: 'xs' })}
                 {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>{ranking.matchWin}</TableCell>, {})}

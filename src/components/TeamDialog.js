@@ -16,7 +16,7 @@ import find from 'lodash/find';
 import reduce from 'lodash/reduce';
 import compact from 'lodash/compact';
 
-import NextMatch from './NextMatch';
+import MatchPreview from './MatchPreview';
 import GameGrid from './GameGrid';
 import { HealerIcon, FlexIcon, DpsIcon, TankIcon } from './RoleIcons';
 
@@ -88,6 +88,7 @@ function markMapWinner(match, team) {
 class TeamDialog extends React.Component {
   render() {
     const { classes, open, team, width, maps, opponent } = this.props;
+    console.log(team, opponent)
     if (!open) {
       return null;
     }
@@ -99,7 +100,7 @@ class TeamDialog extends React.Component {
         transition={Transition}
       >
         <AppBar className={classes.appBar}>
-          <Toolbar style={{ backgroundColor: `#${team.secondaryColor}`, color: `#${team.primaryColor}` }}>
+          <Toolbar style={{ backgroundColor: team.secondaryColor, color: team.primaryColor }}>
             <IconButton color="inherit" onClick={this.props.handleClose} aria-label="Close">
               <CloseIcon />
             </IconButton>
@@ -126,7 +127,8 @@ class TeamDialog extends React.Component {
               ))}
             </GridList>
           )}
-          <NextMatch team={team} />
+          <MatchPreview team={team} opponent={opponent} />
+          {/* <NextMatch team={team} />
           <GameGrid
             games={team.nextMatches && team.nextMatches[0].games.map(game => {
               console.log('game', game)
@@ -138,7 +140,7 @@ class TeamDialog extends React.Component {
                 icon
               })
             })}
-          />
+          /> */}
         </Paper>
       </Dialog>
     );

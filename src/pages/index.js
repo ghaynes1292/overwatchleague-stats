@@ -79,11 +79,16 @@ class Index extends React.Component {
     })
     fetchEndpoint('teams').then(teams => {
       Promise.all(teams.competitors.map(competitor =>
-        fetchEndpoint(`team/${competitor.competitor.id}`)
+        fetchEndpoint(`team/${competitor.competitor.id}?expand=team.content&locale=en_US`)
         .then(team => omit(team, ['attributes', 'advantage', 'aboutUrl', 'accounts', 'availableLanguages']))
       )).then(teams => {
         const trimmedTeams = teams.map(team => ({
           ...pick(team, teamFields),
+          primaryColor: find(team.content.colors, ['usage', 'primary']).color.color,
+          secondaryColor: find(team.content.colors, ['usage', 'secondary']).color.color,
+          mainLogo: find(team.content.icons, ['usage', 'main']).png,
+          altLogo: find(team.content.icons, ['usage', 'alt']) && find(team.content.icons, ['usage', 'alt']).png,
+          nameLogo: find(team.content.icons, ['usage', 'mainName']).png,
           players: team.players.map(player => pick(player, playerFields)),
           schedule: team.schedule.map(game => ({
             ...pick(game, scheduleFields),
@@ -91,10 +96,11 @@ class Index extends React.Component {
             games: game.games.map(game => pick(game, gameFields)),
           })),
         }))
+        console.log('trimmed teams!', trimmedTeams)
         const time = moment().format('DD/MM/YYYY HH:MM:SS')
         trimmedTeams.map((team, index) => { localStorage.setItem(`team${index}`, JSON.stringify(team)); })
         localStorage.setItem('lastFetchedTime', time);
-        this.setState({ teams, backgroundLoading: false, lastFetchedTime: time })
+        this.setState({ teams: trimmedTeams, backgroundLoading: false, lastFetchedTime: time })
       })
     });
     fetchEndpoint('maps').then(maps => {
