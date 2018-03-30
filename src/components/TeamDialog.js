@@ -11,6 +11,7 @@ import Slide from 'material-ui/transitions/Slide';
 
 import Paper from 'material-ui/Paper';
 import GridList, { GridListTile, GridListTileBar } from 'material-ui/GridList';
+import Button from 'material-ui/Button';
 
 import find from 'lodash/find';
 import reduce from 'lodash/reduce';
@@ -56,6 +57,13 @@ const styles = {
   imageTile: {
     top: '60%'
   },
+  teamImage: {
+    maxWidth: '30px',
+    marginLeft: '10px',
+  },
+  buttonContainer: {
+    display: 'flex'
+  }
 };
 
 function Transition(props) {
@@ -91,7 +99,7 @@ function markMapWinner(match, team) {
 
 class TeamDialog extends React.Component {
   render() {
-    const { classes, open, team, width, maps, opponent, size } = this.props;
+    const { classes, open, team, width, maps, opponent, otherOpponent, size, matchIndex, handleNextMatch, handlePrevMatch } = this.props;
 
     if (!open) {
       return null;
@@ -132,10 +140,28 @@ class TeamDialog extends React.Component {
             </GridList>
           )}
           <MatchPreview team={team} opponent={opponent} size={size} />
+          <div className={classes.buttonContainer}>
+            {matchIndex === 0
+              ? <Button
+                variant="raised"
+                style={{ backgroundColor: otherOpponent.primaryColor }}
+                onClick={handleNextMatch}>
+                  Next Match
+                  <img className={classes.teamImage} src={otherOpponent.altLogo || otherOpponent.mainLogo}/>
+              </Button>
+              : <Button
+                variant="raised"
+                style={{ backgroundColor: otherOpponent.primaryColor }}
+                onClick={handlePrevMatch}>
+                  Previous Match
+                  <img className={classes.teamImage} src={otherOpponent.altLogo || otherOpponent.mainLogo}/>
+              </Button>
+            }
+          </div>
           <GameGrid
             team={team}
             opponent={opponent}
-            games={team.nextMatches && team.nextMatches[0].games.map((game, index) => {
+            games={team.nextMatches && team.nextMatches[matchIndex].games.map((game, index) => {
               const map = find(maps, ['id', game.maps])
               const icon = map ? map.thumbnail : brokenImage
               const mapName = map ? map.name.en_US : 'No Name'

@@ -82,6 +82,7 @@ const styles = {
   hourMinutes: {
     display: 'flex',
     flexDirection: 'column',
+    margin: '0 4px',
   }
 };
 

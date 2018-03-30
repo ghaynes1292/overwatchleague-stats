@@ -54,7 +54,7 @@ const styles = theme => ({
 const wrapInHidden = (component, props) => <Hidden {...props}>{component}</Hidden>
 
 function SimpleTable(props) {
-  const { classes, width, teams, maps, teamProp, setTeam, opponent, setOpponent } = props;
+  const { classes, width, teams, maps, teamProp, setTeam, opponent, setOpponent, setMatchIndex, matchIndex } = props;
   console.log('width', width)
   return (
     <Paper className={classes.root}>
@@ -88,7 +88,7 @@ function SimpleTable(props) {
             return (
               <TableRow key={team.id} className={classes.tableRow} onClick={() => {
                 setTeam(team)
-                setOpponent(find(teams, ['id', team.nextMatches[0].competitor.id]))
+                setOpponent(find(teams, ['id', team.nextMatches[matchIndex].competitor.id]))
               }}>
                 {wrapInHidden(<TableCell padding="dense">
                   {index + 1}
@@ -127,8 +127,13 @@ function SimpleTable(props) {
                 </TableCell>, {})}
                 {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
                   <div className={classes.flexContainer}>
-                    {nextMatches.map(match =>
-                      <div key={match.startDate}>
+                    {nextMatches.map((match, i) =>
+                      <div key={match.startDate} onClick={(e) => {
+                        setTeam(team)
+                        setOpponent(find(teams, ['id', team.nextMatches[i].competitor.id]))
+                        setMatchIndex(i);
+                        e.stopPropagation();
+                      }}>
                         <img width={35} src={match.competitor.icon}/>
                       </div>
                     )}
@@ -142,8 +147,18 @@ function SimpleTable(props) {
       <TeamDialog
         team={teamProp || {}}
         opponent={opponent || {}}
+        otherOpponent={teamProp && find(teams, ['id', teamProp.nextMatches[matchIndex === 0 ? 1 : 0].competitor.id])}
         open={!!teamProp}
+        matchIndex={matchIndex}
         handleClose={() => setTeam(null)}
+        handleNextMatch={() => {
+          setMatchIndex(1);
+          setOpponent(find(teams, ['id', teamProp.nextMatches[1].competitor.id]));
+        }}
+        handlePrevMatch={() => {
+          setMatchIndex(0);
+          setOpponent(find(teams, ['id', teamProp.nextMatches[0].competitor.id]));
+        }}
         width={width}
         maps={maps}
         size={width}
@@ -161,4 +176,5 @@ export default compose(
   withWidth(),
   withState('teamProp', 'setTeam', null),
   withState('opponent', 'setOpponent', null),
+  withState('matchIndex', 'setMatchIndex', 0),
 )(SimpleTable);
