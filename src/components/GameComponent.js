@@ -54,6 +54,11 @@ const styles = {
   minTextWidth: {
     minWidth: '100px',
   },
+  gameScore: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-around'
+  }
 };
 
 function GameComponent(props) {
@@ -74,17 +79,21 @@ function GameComponent(props) {
         <div style={{ backgroundColor: team.primaryColor }}>
           <img className={classes.teamImage} src={team.altLogo || team.mainLogo}/>
         </div>
-        <Typography variant="subheading" gutterBottom>
-          {`W: ${teamStats.wins} L: ${teamStats.losses} D: ${teamStats.draws}`}
-        </Typography>
+        <div className={classes.gameScore}>
+          <Typography variant="subheading" gutterBottom>{`W: ${teamStats.wins}`}</Typography>
+          <Typography variant="subheading" gutterBottom>{`L: ${teamStats.losses}`}</Typography>
+          <Typography variant="subheading" gutterBottom>{`D: ${teamStats.draws}`}</Typography>
+        </div>
       </div>
       <div className={classes.opponent}>
         <div style={{ backgroundColor: opponent.primaryColor }}>
           <img className={classes.teamImage} src={opponent.altLogo || opponent.mainLogo}/>
         </div>
-        <Typography variant="subheading" gutterBottom>
-          {`W: ${opponentStats.wins} L: ${opponentStats.losses} D: ${opponentStats.draws}`}
-        </Typography>
+        <div className={classes.gameScore}>
+          <Typography variant="subheading" gutterBottom>{`W: ${opponentStats.wins}`}</Typography>
+          <Typography variant="subheading" gutterBottom>{`L: ${opponentStats.losses}`}</Typography>
+          <Typography variant="subheading" gutterBottom>{`D: ${opponentStats.draws}`}</Typography>
+        </div>
       </div>
     </Paper>
   );
