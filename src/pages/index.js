@@ -28,6 +28,10 @@ const styles = theme => ({
   },
   typography: {
     fontSize: '12px'
+  },
+  flex: {
+    display: 'flex',
+    justifyContent: 'space-between'
   }
 });
 
@@ -138,13 +142,15 @@ class Index extends React.Component {
             <CircularProgress className={classes.progress} size={50} />
           </div>
           : <div>
-            <Typography variant="body1" align="left" className={classes.typography}>
-              {backgroundLoading && 'Updating in background...'}
-            </Typography>
-            <Typography variant="body1" align="right" className={classes.typography}>
-              Last Updated:{lastFetchedTime}
-            </Typography>
-            <TeamTable teams={orderedTeams} maps={maps} collapsedIndex={1}/>
+              <div className={classes.flex}>
+                <Typography variant="body1" align="left" className={classes.typography}>
+                  {backgroundLoading && 'Updating in background...'}
+                </Typography>
+                <Typography variant="body1" align="right" className={classes.typography}>
+                  Last Updated:{lastFetchedTime}
+                </Typography>
+              </div>
+              <TeamTable teams={orderedTeams} maps={maps} collapsedIndex={1}/>
           </div>
         }
       </div>

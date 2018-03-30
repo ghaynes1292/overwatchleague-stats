@@ -3,21 +3,23 @@ import PropTypes from 'prop-types';
 import { compose, withState } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import withWidth from 'material-ui/utils/withWidth';
-import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
+import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
-import Hidden from 'material-ui/Hidden';
 import find from 'lodash/find';
+import without from 'lodash/without';
+import intersection from 'lodash/intersection';
 
 import TeamDialog from './TeamDialog';
+import TableMenu from './TableMenu';
+
+const DEFAULT_COLUMNS = ['Place', 'Team Icon', 'Team Name', 'Match Win', 'Match Loss', 'Win %', 'Past Matches', 'Game Wins', 'Game Loss', 'Diff', 'Next'];
+
+const MOBILE_COLS = ['Team Icon', 'Match Win', 'Match Loss', 'Diff', 'Next']
 
 const styles = theme => ({
   root: {
-    position: 'absolute',
-    top: '14px',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    overflowX: 'hidden'
+    width: 'fit-content',
+    minWidth: '100%'
   },
   table: {
     minWidth: 200,
@@ -51,27 +53,40 @@ const styles = theme => ({
   }
 });
 
-const wrapInHidden = (component, props) => <Hidden {...props}>{component}</Hidden>
-
 function SimpleTable(props) {
-  const { classes, width, teams, maps, teamProp, setTeam, opponent, setOpponent, setMatchIndex, matchIndex } = props;
+  const { classes, width, teams, maps, teamProp, setTeam, opponent, setOpponent, setMatchIndex, matchIndex, selectedCols, setCols } = props;
   console.log('width', width)
   return (
     <Paper className={classes.root}>
+      <TableMenu
+        options={DEFAULT_COLUMNS}
+        selectedCols={selectedCols}
+        selectCol={(option) => setCols(selectedCols.includes(option) ? without(selectedCols, option) : [...selectedCols, option])}
+      />
       <Table className={classes.table}>
         <TableHead>
           <TableRow>
-            {wrapInHidden(<TableCell padding="dense">Place</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Team</TableCell>, {})}
-            {wrapInHidden(<TableCell></TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>Match Win</TableCell>, {})}
-            {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>Match Loss</TableCell>, {})}
-            {wrapInHidden(<TableCell numeric>Win%</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell padding="dense">Past Matches</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell numeric>Game Win</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell numeric>Game Loss</TableCell>, { only: 'xs' })}
-            {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>Diff</TableCell>, {})}
-            {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Next</TableCell>, {})}
+            {selectedCols.includes('Place') && <TableCell padding="dense">Place</TableCell>}
+            {selectedCols.includes('Team Icon') &&
+              <TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Team</TableCell>
+            }
+            {selectedCols.includes('Team Name') && <TableCell></TableCell>}
+            {selectedCols.includes('Match Win') &&
+              <TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>Match Win</TableCell>
+            }
+            {selectedCols.includes('Match Loss') &&
+              <TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>Match Loss</TableCell>
+            }
+            {selectedCols.includes('Win %') && <TableCell numeric>Win%</TableCell>}
+            {selectedCols.includes('Past Matches') && <TableCell padding="dense">Past Matches</TableCell>}
+            {selectedCols.includes('Game Wins') && <TableCell numeric>Game Win</TableCell>}
+            {selectedCols.includes('Game Loss') && <TableCell numeric>Game Loss</TableCell>}
+            {selectedCols.includes('Diff') &&
+              <TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>Diff</TableCell>
+            }
+            {selectedCols.includes('Next') &&
+              <TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>Next</TableCell>
+            }
           </TableRow>
         </TableHead>
         <TableBody>
@@ -90,55 +105,60 @@ function SimpleTable(props) {
                 setTeam(team)
                 setOpponent(find(teams, ['id', team.nextMatches[matchIndex].competitor.id]))
               }}>
-                {wrapInHidden(<TableCell padding="dense">
-                  {index + 1}
-                </TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
-                  <img width={35} src={team.mainLogo}/>
-                </TableCell>, {})}
-                {wrapInHidden(<TableCell>{team.abbreviatedName}</TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>
-                  {ranking.matchWin}
-                </TableCell>, {})}
-                {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>
-                  {ranking.matchLoss}
-                </TableCell>, {})}
-                {wrapInHidden(<TableCell numeric>
-                  {Math.round((ranking.matchWin * Math.pow(10, 1.00))/(ranking.matchWin + ranking.matchLoss) * Math.pow(10, 1.00))}
-                </TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell numeric padding="dense">
-                  <div className={classes.flexContainer}>
-                    {completedMatches.slice(-6).map(match =>
-                      <div
-                        key={match.id}
-                        className={classes.flexMark}
-                        style={{ backgroundColor: match.winner ? 'rgb(112, 219, 112)' : 'rgb(219, 112, 112)' }}
-                      />
-                    )}
-                  </div>
-                </TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell numeric>{ranking.gameWin}</TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell numeric>{ranking.gameLoss}</TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell
-                  numeric
-                  padding="dense" classes={{ paddingDense: classes.paddingDense }}
-                  className={diffColor}>
-                  {(ranking.gameWin - ranking.gameLoss)}
-                </TableCell>, {})}
-                {wrapInHidden(<TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
-                  <div className={classes.flexContainer}>
-                    {nextMatches.map((match, i) =>
-                      <div key={match.startDate} onClick={(e) => {
-                        setTeam(team)
-                        setOpponent(find(teams, ['id', team.nextMatches[i].competitor.id]))
-                        setMatchIndex(i);
-                        e.stopPropagation();
-                      }}>
-                        <img width={35} src={match.competitor.icon}/>
-                      </div>
-                    )}
-                  </div>
-                </TableCell>, {})}
+                {selectedCols.includes('Place') && <TableCell padding="dense">{index + 1}</TableCell>}
+                {selectedCols.includes('Team Icon') &&
+                  <TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
+                    <img width={35} src={team.mainLogo}/>
+                </TableCell>}
+                {selectedCols.includes('Team Name') && <TableCell>{team.abbreviatedName}</TableCell>}
+                {selectedCols.includes('Match Win') &&
+                  <TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>
+                    {ranking.matchWin}
+                </TableCell>}
+                {selectedCols.includes('Match Loss') &&
+                  <TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>
+                    {ranking.matchLoss}
+                </TableCell>}
+                {selectedCols.includes('Win %') &&
+                  <TableCell numeric>
+                    {Math.round((ranking.matchWin * Math.pow(10, 1.00))/(ranking.matchWin + ranking.matchLoss) * Math.pow(10, 1.00))}
+                </TableCell>}
+                {selectedCols.includes('Past Matches') &&
+                  <TableCell numeric padding="dense">
+                    <div className={classes.flexContainer}>
+                      {completedMatches.slice(-6).map(match =>
+                        <div
+                          key={match.id}
+                          className={classes.flexMark}
+                          style={{ backgroundColor: match.winner ? 'rgb(112, 219, 112)' : 'rgb(219, 112, 112)' }}
+                        />
+                      )}
+                    </div>
+                </TableCell>}
+                {selectedCols.includes('Game Wins') && <TableCell numeric>{ranking.gameWin}</TableCell>}
+                {selectedCols.includes('Game Loss') && <TableCell numeric>{ranking.gameLoss}</TableCell>}
+                {selectedCols.includes('Diff') &&
+                  <TableCell
+                    numeric
+                    padding="dense" classes={{ paddingDense: classes.paddingDense }}
+                    className={diffColor}>
+                      {(ranking.gameWin - ranking.gameLoss)}
+                </TableCell>}
+                {selectedCols.includes('Next') &&
+                  <TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
+                    <div className={classes.flexContainer}>
+                      {nextMatches.map((match, i) =>
+                        <div key={match.startDate} onClick={(e) => {
+                          setTeam(team)
+                          setOpponent(find(teams, ['id', team.nextMatches[i].competitor.id]))
+                          setMatchIndex(i);
+                          e.stopPropagation();
+                        }}>
+                          <img width={35} src={match.competitor.icon}/>
+                        </div>
+                      )}
+                    </div>
+                </TableCell>}
               </TableRow>
             );
           })}
@@ -177,4 +197,7 @@ export default compose(
   withState('teamProp', 'setTeam', null),
   withState('opponent', 'setOpponent', null),
   withState('matchIndex', 'setMatchIndex', 0),
+  withState('selectedCols', 'setCols',
+    (props) => props.width === 'xs' ? MOBILE_COLS : DEFAULT_COLUMNS
+  ),
 )(SimpleTable);
