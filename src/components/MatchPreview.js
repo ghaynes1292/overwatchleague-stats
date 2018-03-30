@@ -87,8 +87,8 @@ const styles = {
 };
 
 function NextMatch(props) {
-  const { classes, team, opponent, size } = props;
-  const gameTime = moment(team.nextMatches && team.nextMatches[0].startDate);
+  const { classes, team, opponent, matchIndex, size } = props;
+  const gameTime = moment(team.nextMatches && team.nextMatches[matchIndex].startDate);
   return (
     <div className={classes.headerContainer}>
       <div className={classes.headerTeam} style={{ backgroundColor: team.primaryColor }}/>

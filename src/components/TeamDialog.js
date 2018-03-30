@@ -139,7 +139,7 @@ class TeamDialog extends React.Component {
               ))}
             </GridList>
           )}
-          <MatchPreview team={team} opponent={opponent} size={size} />
+          <MatchPreview team={team} opponent={opponent} size={size} matchIndex={matchIndex} />
           <div className={classes.buttonContainer}>
             {matchIndex === 0
               ? <Button
