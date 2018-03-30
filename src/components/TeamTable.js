@@ -23,7 +23,8 @@ const styles = theme => ({
     minWidth: 200,
   },
   tableRow: {
-    height: '30px'
+    height: '30px',
+    cursor: 'pointer'
   },
   flexContainer: {
     display: 'flex',
@@ -96,8 +97,12 @@ function SimpleTable(props) {
                   <img width={35} src={team.mainLogo}/>
                 </TableCell>, {})}
                 {wrapInHidden(<TableCell>{team.abbreviatedName}</TableCell>, { only: 'xs' })}
-                {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>{ranking.matchWin}</TableCell>, {})}
-                {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>{ranking.matchLoss}</TableCell>, {})}
+                {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>
+                  {ranking.matchWin}
+                </TableCell>, {})}
+                {wrapInHidden(<TableCell numeric padding="dense" classes={{ paddingDense: classes.paddingDense }}>
+                  {ranking.matchLoss}
+                </TableCell>, {})}
                 {wrapInHidden(<TableCell numeric>
                   {Math.round((ranking.matchWin * Math.pow(10, 1.00))/(ranking.matchWin + ranking.matchLoss) * Math.pow(10, 1.00))}
                 </TableCell>, { only: 'xs' })}

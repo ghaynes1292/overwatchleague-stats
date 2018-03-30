@@ -81,8 +81,11 @@ class Index extends React.Component {
   async componentWillMount() {
     this.setState({
       loading: true,
-      backgroundLoading: true
+      backgroundLoading: true,
+      loadingText: 'Loading the most up to date stats...',
     })
+    new Promise(resolve => setTimeout(() => this.setState({ loadingText: 'There really is a lot of data...'}), 2200));
+    new Promise(resolve => setTimeout(() => this.setState({ loadingText: 'Every visit after this is instantaneous!'}), 6000));
     const localTeams = teamsNumbers.map((num) => JSON.parse(localStorage.getItem(num)));
     const lastFetchedTime = localStorage.getItem('lastFetchedTime')
     this.setState({
@@ -118,7 +121,7 @@ class Index extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { teams, maps, loading, lastFetchedTime, backgroundLoading } = this.state;
+    const { teams, maps, loading, loadingText, lastFetchedTime, backgroundLoading } = this.state;
     const newTeams = teams.map(team => ({
       ...team,
       completedMatches: getCompletedMatches(team),
@@ -130,7 +133,7 @@ class Index extends React.Component {
         {loading || teams.length === 0
           ? <div>
             <Typography variant="headline" gutterBottom align="center">
-              Loading the most up to date stats...
+              {loadingText}
             </Typography>
             <CircularProgress className={classes.progress} size={50} />
           </div>
