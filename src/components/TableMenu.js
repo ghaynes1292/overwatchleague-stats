@@ -1,7 +1,6 @@
 import React from 'react';
 import IconButton from 'material-ui/IconButton';
 import Menu, { MenuItem } from 'material-ui/Menu';
-import MoreVertIcon from 'material-ui-icons/MoreVert';
 import FilterListIcon from 'material-ui-icons/FilterList';
 import Checkbox from 'material-ui/Checkbox';
 
@@ -17,7 +16,7 @@ class LongMenu extends React.Component {
   };
 
   handleSelect = (option) => {
-    const { selectedCols, selectCol } = this.props;
+    const { selectCol } = this.props;
     selectCol(option);
   };
 
@@ -30,7 +29,7 @@ class LongMenu extends React.Component {
     const { options, selectedCols } = this.props;
 
     return (
-      <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
+      <div>
         <IconButton
           aria-label="Table Columns"
           aria-owns={anchorEl ? 'long-menu' : null}

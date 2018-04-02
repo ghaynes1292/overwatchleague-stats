@@ -121,11 +121,21 @@ class Index extends React.Component {
     fetchEndpoint('maps').then(maps => {
       this.setState({ maps })
     });
+    fetchEndpoint('v2/standings?locale=en_US')
+    .then((standings) => {
+      const stages = standings.data.reduce((acc, value) => ({
+        stage1: [...acc.stage1, { ...value, ranking: value.stages.stage1 }],
+        stage2: [...acc.stage2, { ...value, ranking: value.stages.stage2 }],
+        stage3: [...acc.stage3, { ...value, ranking: value.stages.stage3 }],
+        stage4: [...acc.stage4, { ...value, ranking: value.stages.stage4 }],
+      }), { stage1: [], stage2: [], stage3: [], stage4: [] });
+      this.setState({ standings: stages })
+    })
   }
 
   render() {
     const { classes } = this.props;
-    const { teams, maps, loading, loadingText, lastFetchedTime, backgroundLoading } = this.state;
+    const { teams, maps, loading, loadingText, lastFetchedTime, backgroundLoading, standings } = this.state;
     const newTeams = teams.map(team => ({
       ...team,
       completedMatches: getCompletedMatches(team),
@@ -150,7 +160,7 @@ class Index extends React.Component {
                   Last Updated:{lastFetchedTime}
                 </Typography>
               </div>
-              <TeamTable teams={orderedTeams} maps={maps} collapsedIndex={1}/>
+              <TeamTable teams={orderedTeams} maps={maps} collapsedIndex={1} standings={standings}/>
           </div>
         }
       </div>
