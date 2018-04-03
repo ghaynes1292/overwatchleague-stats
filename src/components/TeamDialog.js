@@ -144,14 +144,14 @@ class TeamDialog extends React.Component {
             {matchIndex === 0
               ? <Button
                 variant="raised"
-                style={{ backgroundColor: otherOpponent.primaryColor }}
+                style={{ backgroundColor: otherOpponent.primaryColor, color: getTextColor(otherOpponent.primaryColor) }}
                 onClick={handleNextMatch}>
                   Next Match
                   <img className={classes.teamImage} src={otherOpponent.altLogo || otherOpponent.mainLogo}/>
               </Button>
               : <Button
                 variant="raised"
-                style={{ backgroundColor: otherOpponent.primaryColor }}
+                style={{ backgroundColor: otherOpponent.primaryColor, color: getTextColor(otherOpponent.primaryColor) }}
                 onClick={handlePrevMatch}>
                   Previous Match
                   <img className={classes.teamImage} src={otherOpponent.altLogo || otherOpponent.mainLogo}/>

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import Typography from 'material-ui/Typography';
 
 const styles = theme => ({
   root: {
@@ -26,7 +25,7 @@ class FullWidthTabs extends React.Component {
   };
 
   render() {
-    const { classes, theme, value } = this.props;
+    const { classes, value } = this.props;
 
     return (
       <div className={classes.root}>

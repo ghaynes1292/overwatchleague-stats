@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import { compose, withState } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import withWidth from 'material-ui/utils/withWidth';
-import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter } from 'material-ui/Table';
+import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
 import orderBy from 'lodash/orderBy';
 import find from 'lodash/find';
 import without from 'lodash/without';
-import intersection from 'lodash/intersection';
 
 import TeamDialog from './TeamDialog';
 import TableMenu from './TableMenu';
