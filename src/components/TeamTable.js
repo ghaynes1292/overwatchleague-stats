@@ -196,7 +196,11 @@ function SimpleTable(props) {
           prevOpponent={teamProp && matchIndex > 0 && find(teams, ['id', teamProp.nextMatches[matchIndex - 1].competitor.id])}
           open={!!teamProp}
           matchIndex={matchIndex}
-          handleClose={() => setTeam(null)}
+          handleClose={() => {
+            setTeam(null);
+            setMatchIndex(0);
+            setOpponent(null);
+          }}
           handleNextMatch={() => {
             setMatchIndex(matchIndex + 1);
             setOpponent(find(teams, ['id', teamProp.nextMatches[matchIndex + 1].competitor.id]));
