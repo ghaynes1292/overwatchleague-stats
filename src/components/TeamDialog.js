@@ -73,19 +73,15 @@ function Transition(props) {
 function GetCompletedGamesFromMap(map, team) {
   const games = reduce(team.completedMatches, (acc, match) => {
     const updatedMatch = markMapWinner(match, team)
-    console.log('game,', match)
     const rightMap = find(updatedMatch.games, game => {
       return game.attributes.map === map
     })
     return [...acc, rightMap]
   }, [])
-  console.log('team, match',team, games, map)
   return compact(games);
 }
 
 function markMapWinner(match, team) {
-  const winner = match.scores[0] > match.scores[1] ? 'team1' : 'team2';
-  const loser = match.scores[0] > match.scores[1] ? 'team2' : 'team1';
   const myTeam = match.competitors[0].id === team.id ? 'team1' : 'team2';
   const newMatch = {
     ...match,

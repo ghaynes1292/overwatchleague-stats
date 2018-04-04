@@ -52,7 +52,7 @@ const styles = {
     maxWidth: '45px',
   },
   minTextWidth: {
-    minWidth: '100px',
+    minWidth: '110px',
   },
   gameScore: {
     width: '100%',
