@@ -172,7 +172,7 @@ function SimpleTable(props) {
                   {selectedCols.includes('Next') &&
                     <TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
                       <div className={classes.flexContainer}>
-                        {nextMatches.map((match, i) =>
+                        {nextMatches.slice(0, 2).map((match, i) =>
                           <div key={match.startDate} onClick={(e) => {
                             setTeam(team)
                             setOpponent(find(teams, ['id', team.nextMatches[i].competitor.id]))
@@ -192,17 +192,18 @@ function SimpleTable(props) {
         <TeamDialog
           team={teamProp || {}}
           opponent={opponent || {}}
-          otherOpponent={teamProp && find(teams, ['id', teamProp.nextMatches[matchIndex === 0 ? 1 : 0].competitor.id])}
+          nextOpponent={teamProp && matchIndex < 3 && find(teams, ['id', teamProp.nextMatches[matchIndex + 1].competitor.id])}
+          prevOpponent={teamProp && matchIndex > 0 && find(teams, ['id', teamProp.nextMatches[matchIndex - 1].competitor.id])}
           open={!!teamProp}
           matchIndex={matchIndex}
           handleClose={() => setTeam(null)}
           handleNextMatch={() => {
-            setMatchIndex(1);
-            setOpponent(find(teams, ['id', teamProp.nextMatches[1].competitor.id]));
+            setMatchIndex(matchIndex + 1);
+            setOpponent(find(teams, ['id', teamProp.nextMatches[matchIndex + 1].competitor.id]));
           }}
           handlePrevMatch={() => {
-            setMatchIndex(0);
-            setOpponent(find(teams, ['id', teamProp.nextMatches[0].competitor.id]));
+            setMatchIndex(matchIndex - 1);
+            setOpponent(find(teams, ['id', teamProp.nextMatches[matchIndex - 1].competitor.id]));
           }}
           width={width}
           maps={maps}

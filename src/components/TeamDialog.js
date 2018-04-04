@@ -101,7 +101,7 @@ function markMapWinner(match, team) {
 
 class TeamDialog extends React.Component {
   render() {
-    const { classes, open, team, width, maps, opponent, otherOpponent, size, matchIndex, handleNextMatch, handlePrevMatch } = this.props;
+    const { classes, open, team, width, maps, opponent, nextOpponent, prevOpponent, size, matchIndex, handleNextMatch, handlePrevMatch } = this.props;
 
     if (!open) {
       return null;
@@ -143,22 +143,24 @@ class TeamDialog extends React.Component {
           )}
           <MatchPreview team={team} opponent={opponent} size={size} matchIndex={matchIndex} />
           <div className={classes.buttonContainer}>
-            {matchIndex === 0
-              ? <Button
+            {matchIndex > 0 && (
+              <Button
                 variant="raised"
-                style={{ backgroundColor: otherOpponent.primaryColor, color: getTextColor(otherOpponent.primaryColor) }}
-                onClick={handleNextMatch}>
-                  Next Match
-                  <img className={classes.teamImage} src={otherOpponent.altLogo || otherOpponent.mainLogo}/>
-              </Button>
-              : <Button
-                variant="raised"
-                style={{ backgroundColor: otherOpponent.primaryColor, color: getTextColor(otherOpponent.primaryColor) }}
+                style={{ backgroundColor: prevOpponent.primaryColor, color: getTextColor(prevOpponent.primaryColor) }}
                 onClick={handlePrevMatch}>
                   Previous Match
-                  <img className={classes.teamImage} src={otherOpponent.altLogo || otherOpponent.mainLogo}/>
+                  <img className={classes.teamImage} src={prevOpponent.altLogo || prevOpponent.mainLogo}/>
               </Button>
-            }
+            )}
+            {matchIndex < 3 && (
+              <Button
+                variant="raised"
+                style={{ backgroundColor: nextOpponent.primaryColor, color: getTextColor(nextOpponent.primaryColor) }}
+                onClick={handleNextMatch}>
+                  Next Match
+                  <img className={classes.teamImage} src={nextOpponent.altLogo || nextOpponent.mainLogo}/>
+              </Button>
+            )}
           </div>
           <GameGrid
             team={team}

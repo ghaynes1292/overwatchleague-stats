@@ -46,7 +46,7 @@ const getCompletedMatches = (team) =>
 
 const getNextMatches = (team) =>
   orderBy(filter(team.schedule, ['state', 'PENDING']), ['startDate'], ['asc'])
-  .slice(0, 2)
+  .slice(0, 4)
   .map(game => {
     return ({
       competitor: find(game.competitors, (competitor) => competitor.id !== team.id),
