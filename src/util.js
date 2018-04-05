@@ -13,6 +13,21 @@ export const teamsNumbers = [
   'team9',
   'team10',
   'team11',
+];
+
+export const teamIds = [
+  '4402',
+  '4403',
+  '4404',
+  '4405',
+  '4406',
+  '4407',
+  '4408',
+  '4409',
+  '4410',
+  '4523',
+  '4524',
+  '4525',
 ]
 
 const teamColors = [

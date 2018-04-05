@@ -13,7 +13,7 @@ import compact from 'lodash/compact';
 import moment from 'moment';
 
 import withRoot from '../withRoot';
-import { teamFields, playerFields, scheduleFields, competitorFields, gameFields, teamsNumbers } from '../util';
+import { teamFields, playerFields, scheduleFields, competitorFields, gameFields, teamsNumbers, teamIds } from '../util';
 
 import TeamTable from '../components/TeamTable';
 
@@ -97,27 +97,25 @@ class Index extends React.Component {
       teams: compact(localTeams),
       lastFetchedTime,
     })
-    fetchEndpoint('teams').then(teams => {
-      Promise.all(teams.competitors.map(competitor =>
-        fetchEndpoint(`team/${competitor.competitor.id}?expand=team.content&locale=en_US`)
-        .then(team => omit(team, ['attributes', 'advantage', 'aboutUrl', 'accounts', 'availableLanguages']))
-      )).then(teams => {
-        const trimmedTeams = teams.map(team => ({
-          ...pick(team, teamFields),
-          ...getTeamContent(team),
-          players: team.players.map(player => pick(player, playerFields)),
-          schedule: team.schedule.map(game => ({
-            ...pick(game, scheduleFields),
-            competitors: game.competitors.map(competitor => pick(competitor, competitorFields)),
-            games: game.games.map(game => pick(game, gameFields)),
-          })),
-        }))
-        const time = moment().format('DD/MM/YYYY HH:MM:SS')
-        trimmedTeams.map((team, index) => { localStorage.setItem(`team${index}`, JSON.stringify(team)); })
-        localStorage.setItem('lastFetchedTime', time);
-        this.setState({ teams: trimmedTeams, backgroundLoading: false, lastFetchedTime: time })
-      })
-    });
+    Promise.all(teamIds.map(competitor =>
+      fetchEndpoint(`team/${competitor}?expand=team.content&locale=en_US`)
+      .then(team => omit(team, ['attributes', 'advantage', 'aboutUrl', 'accounts', 'availableLanguages']))
+    )).then(teams => {
+      const trimmedTeams = teams.map(team => ({
+        ...pick(team, teamFields),
+        ...getTeamContent(team),
+        players: team.players.map(player => pick(player, playerFields)),
+        schedule: team.schedule.map(game => ({
+          ...pick(game, scheduleFields),
+          competitors: game.competitors.map(competitor => pick(competitor, competitorFields)),
+          games: game.games.map(game => pick(game, gameFields)),
+        })),
+      }))
+      const time = moment().format('DD/MM/YYYY HH:MM:SS')
+      trimmedTeams.map((team, index) => { localStorage.setItem(`team${index}`, JSON.stringify(team)); })
+      localStorage.setItem('lastFetchedTime', time);
+      this.setState({ teams: trimmedTeams, backgroundLoading: false, lastFetchedTime: time })
+    })
     fetchEndpoint('maps').then(maps => {
       this.setState({ maps })
     });
