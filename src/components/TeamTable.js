@@ -75,7 +75,7 @@ function pastAndFutureMatches(team, schedule, teams) {
       .map(match => match.winner.id === team.id),
     futureMatches: filter(teamMatches, ['state', 'PENDING'])
       .slice(0, 2)
-      .map(match => getCompetetor(teams, match, team.id))
+      .map(match => ({ ...getCompetetor(teams, match, team.id), matchId: match.id }))
   }
 }
 
@@ -97,9 +97,9 @@ function stageMapper(stage, standings, teams, schedule) {
 }
 
 function SimpleTable(props) {
-  const { classes, width, teams, maps, standings, schedule, selectedCols, setCols, stageSelected, setStageSelected, selectTeam } = props;
+  const { classes, width, teams, maps, standings, schedule, selectedCols, setCols, stageSelected, setStageSelected, selectTeam, selectMatch } = props;
 
-  const orderedTeams = stageMapper(stageSelected, standings.data, teams.data, schedule.data)
+  const orderedTeams = stageMapper(stageSelected, standings, teams, schedule)
   console.log('width', width)
   return (
     <div>
@@ -210,6 +210,7 @@ function SimpleTable(props) {
                             key={i}
                             className={classes.iconContainer}
                             onClick={(e) => {
+                              selectMatch(find(schedule, ['id', match.matchId]), team.id);
                               e.stopPropagation();
                             }}>
                             <img width={35} src={match.logo.main.png}/>

@@ -29,7 +29,7 @@ const styles = {
 };
 
 function GameComponent(props) {
-  const { classes, matches, liveMatch, teams } = props;
+  const { classes, matches, liveMatch, teams, setMatch } = props;
   console.log(props)
   return (
     <div className={classes.root}>
@@ -37,7 +37,11 @@ function GameComponent(props) {
         const team1 = find(teams, ['id', match.competitors[0].id])
         const team2 = find(teams, ['id', match.competitors[1].id])
         return (
-          <Paper key={match.id} className={classes.game} elevation={(liveMatch && match.id === liveMatch.id) ? 4 : 0}>
+          <Paper
+            key={match.id}
+            className={classes.game}
+            onClick={() => setMatch(match, team1.id)}
+            elevation={(liveMatch && match.id === liveMatch.id) ? 4 : 0}>
             <div style={{ backgroundColor: team1.colors.primary.color }}>
               <img width={35} src={team1.logo.main.png}/>
             </div>

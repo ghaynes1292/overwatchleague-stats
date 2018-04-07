@@ -223,7 +223,7 @@ class Index extends React.Component {
 
   render() {
     const { classes, width, open, team, match, toggleDialog, setTeam, setMatch } = this.props;
-    console.log('state:', this.state)
+    console.log('state:', this.state, this.props)
 
     const { teams, maps, standings, schedule, liveMatch, loading } = this.state;
     return (
@@ -241,15 +241,17 @@ class Index extends React.Component {
                   teams={teams.data}
                   matches={filter(schedule.data, match => moment(match.startDateTS).isSame(moment(), 'day'))}
                   liveMatch={liveMatch.data.liveMatch}
+                  setMatch={setMatch}
                 />
               )}
               <TeamTable
-                teams={teams}
-                maps={maps}
-                standings={standings}
-                schedule={schedule}
+                teams={teams.data}
+                maps={maps.data}
+                standings={standings.data}
+                schedule={schedule.data}
                 width={width}
                 selectTeam={setTeam}
+                selectMatch={setMatch}
               />
               <TeamDialog
                 team={team}
@@ -279,7 +281,7 @@ const IndexComponent = compose(
   {
     toggleDialog: ({ open }) => () => ({ open: !open, team: null, match: null }),
     setTeam: () => (team) => ({ team, open: true }),
-    setMatch: () => (match) => ({ match }),
+    setMatch: () => (match, team) => ({ match, team, open: true }),
   }),
   withWidth(),
 )(Index)

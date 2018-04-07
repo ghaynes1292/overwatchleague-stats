@@ -105,7 +105,6 @@ class TeamDialog extends React.Component {
     if (!open || !team) {
       return null;
     }
-    console.log('props in team dialog', this.props)
     return (
       <Dialog
         fullScreen
@@ -158,7 +157,6 @@ class TeamDialog extends React.Component {
             team={team}
             opponent={opponent}
             games={match.games.map((game, index) => {
-              console.log('game!', game, this.props)
               const map = find(maps, ['id', game.attributes.map])
               const icon = map ? map.thumbnail : brokenImage
               const mapName = map ? map.name.en_US : 'No Name'
@@ -184,6 +182,7 @@ TeamDialog.propTypes = {
 export default compose(
   withStyles(styles),
   withProps((props) => {
+    console.log('props on import', props)
     const team = getTeamFromTeams(props.teams, props.team);
     const teamMatches = getTeamMatches(props.schedule, props.team);
     const teamMatch = props.match || filter(teamMatches, ['state', 'PENDING'])[0]
@@ -208,7 +207,7 @@ export default compose(
     })
   }),
   withHandlers({
-    handlePrevMatch: (props) => (prevMatch) => props.setMatch(props.prevMatch),
-    handleNextMatch: (props) => (nextMatch) => props.setMatch(props.nextMatch)
+    handlePrevMatch: (props) => (prevMatch) => props.setMatch(props.prevMatch, props.team.id),
+    handleNextMatch: (props) => (nextMatch) => props.setMatch(props.nextMatch, props.team.id)
   }),
 )(TeamDialog);
