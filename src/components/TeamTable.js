@@ -1,17 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, withState } from 'recompose';
+import moment from 'moment';
 import { withStyles } from 'material-ui/styles';
-import withWidth from 'material-ui/utils/withWidth';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
 import orderBy from 'lodash/orderBy';
 import find from 'lodash/find';
+import filter from 'lodash/filter';
 import without from 'lodash/without';
+import reject from 'lodash/reject';
 
-import TeamDialog from './TeamDialog';
+
 import TableMenu from './TableMenu';
 import StagePicker from './StagePicker';
+
+import { getTeamFromTeams, getTeamMatches, getCompetetor } from '../util';
 
 const DEFAULT_COLS = ['Place', 'Team Icon', 'Team Name', 'Match Win', 'Match Loss', 'Win %', 'Past Matches', 'Game Wins', 'Game Loss', 'Diff', 'Next'];
 const DEFAULT_STAGE_COLS = ['Place', 'Team Icon', 'Team Name', 'Match Win', 'Match Loss', 'Win %', 'Game Wins', 'Game Loss', 'Diff'];
@@ -32,8 +36,15 @@ const styles = theme => ({
   },
   flexContainer: {
     display: 'flex',
+    justifyContent: 'space-between'
+  },
+  matchMark: {
+    display: 'flex',
     width: '75px',
     height: '30px'
+  },
+  iconContainer: {
+    margin: 'auto'
   },
   flexMark: {
     flex: '1 auto',
@@ -55,17 +66,40 @@ const styles = theme => ({
   }
 });
 
-function stageMapper(stage, teams, standings) {
-  return stage === 0
-    ? teams
+function pastAndFutureMatches(team, schedule, teams) {
+  const teamMatches = getTeamMatches(schedule, team.id)
+
+  return {
+    pastMatches: filter(teamMatches, ['state', 'CONCLUDED'])
+      .slice(-6)
+      .map(match => match.winner.id === team.id),
+    futureMatches: filter(teamMatches, ['state', 'PENDING'])
+      .slice(0, 2)
+      .map(match => getCompetetor(teams, match, team.id))
+  }
+}
+
+function getFuture(team, schedule) {
+  return schedule.filter(match => match.competitors.some(comp => comp.id === team.id))
+  .slice(-6)
+  .map(match => match.winner.id === team.id)
+}
+
+function stageMapper(stage, standings, teams, schedule) {
+  const teamRankings = stage === 0
+    ? orderBy(standings.overall, ['ranking.matchWin', 'ranking.gameWin'], ['desc', 'desc'])
     : orderBy(standings[`stage${stage}`], ['ranking.matchWin', 'ranking.gameWin'], ['desc', 'desc'])
-    .map(team => ({ ...find(teams, ['id', team.id]), ranking: team.ranking }))
+  return teamRankings.map(team => ({
+    ...team,
+    ...getTeamFromTeams(teams, team.id),
+    ...pastAndFutureMatches(team, schedule, teams)
+  }))
 }
 
 function SimpleTable(props) {
-  const { classes, width, teams, maps, teamProp, setTeam, opponent, setOpponent, setMatchIndex, matchIndex, selectedCols, setCols, stageSelected, setStageSelected, standings } = props;
+  const { classes, width, teams, maps, standings, schedule, selectedCols, setCols, stageSelected, setStageSelected, selectTeam } = props;
 
-  const orderedTeams = stageMapper(stageSelected, teams, standings)
+  const orderedTeams = stageMapper(stageSelected, standings.data, teams.data, schedule.data)
   console.log('width', width)
   return (
     <div>
@@ -116,7 +150,7 @@ function SimpleTable(props) {
           </TableHead>
           <TableBody>
             {orderedTeams.map((team, index) => {
-              const { ranking, completedMatches, nextMatches } = team;
+              const { ranking, pastMatches, futureMatches } = team;
               let diffColor;
               if (ranking.gameWin - ranking.gameLoss === 0) {
                 diffColor = null
@@ -127,13 +161,12 @@ function SimpleTable(props) {
               }
               return (
                 <TableRow key={team.id} className={classes.tableRow} onClick={() => {
-                  setTeam(team)
-                  setOpponent(find(teams, ['id', team.nextMatches[matchIndex].competitor.id]))
+                  selectTeam(team.id)
                 }}>
-                  {selectedCols.includes('Place') && <TableCell padding="dense">{index + 1}</TableCell>}
+                  {selectedCols.includes('Place') && <TableCell padding="dense">{`${index + 1}`}</TableCell>}
                   {selectedCols.includes('Team Icon') &&
                     <TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
-                      <img width={35} src={team.mainLogo}/>
+                      <img width={35} src={team.logo.main.png}/>
                   </TableCell>}
                   {selectedCols.includes('Team Name') && <TableCell>{team.abbreviatedName}</TableCell>}
                   {selectedCols.includes('Match Win') &&
@@ -146,16 +179,16 @@ function SimpleTable(props) {
                   </TableCell>}
                   {selectedCols.includes('Win %') &&
                     <TableCell numeric>
-                      {Math.round((ranking.matchWin * Math.pow(10, 1.00))/(ranking.matchWin + ranking.matchLoss) * Math.pow(10, 1.00))}
+                      {`${Math.round((ranking.matchWin * Math.pow(10, 1.00))/(ranking.matchWin + ranking.matchLoss) * Math.pow(10, 1.00))}`}
                   </TableCell>}
                   {selectedCols.includes('Past Matches') &&
                     <TableCell numeric padding="dense">
-                      <div className={classes.flexContainer}>
-                        {completedMatches.slice(-6).map(match =>
+                      <div className={classes.matchMark}>
+                        {pastMatches.map((match, i) =>
                           <div
-                            key={match.id}
+                            key={i}
                             className={classes.flexMark}
-                            style={{ backgroundColor: match.winner ? 'rgb(112, 219, 112)' : 'rgb(219, 112, 112)' }}
+                            style={{ backgroundColor: match ? 'rgb(112, 219, 112)' : 'rgb(219, 112, 112)' }}
                           />
                         )}
                       </div>
@@ -167,19 +200,19 @@ function SimpleTable(props) {
                       numeric
                       padding="dense" classes={{ paddingDense: classes.paddingDense }}
                       className={diffColor}>
-                        {(ranking.gameWin - ranking.gameLoss)}
+                        {`${(ranking.gameWin - ranking.gameLoss)}`}
                   </TableCell>}
                   {selectedCols.includes('Next') &&
                     <TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
                       <div className={classes.flexContainer}>
-                        {nextMatches.slice(0, 2).map((match, i) =>
-                          <div key={match.startDate} onClick={(e) => {
-                            setTeam(team)
-                            setOpponent(find(teams, ['id', team.nextMatches[i].competitor.id]))
-                            setMatchIndex(i);
-                            e.stopPropagation();
-                          }}>
-                            <img width={35} src={match.competitor.icon}/>
+                        {futureMatches.map((match, i) =>
+                          <div
+                            key={i}
+                            className={classes.iconContainer}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}>
+                            <img width={35} src={match.logo.main.png}/>
                           </div>
                         )}
                       </div>
@@ -189,30 +222,6 @@ function SimpleTable(props) {
             })}
           </TableBody>
         </Table>
-        <TeamDialog
-          team={teamProp || {}}
-          opponent={opponent || {}}
-          nextOpponent={teamProp && matchIndex < 3 && find(teams, ['id', teamProp.nextMatches[matchIndex + 1].competitor.id])}
-          prevOpponent={teamProp && matchIndex > 0 && find(teams, ['id', teamProp.nextMatches[matchIndex - 1].competitor.id])}
-          open={!!teamProp}
-          matchIndex={matchIndex}
-          handleClose={() => {
-            setTeam(null);
-            setMatchIndex(0);
-            setOpponent(null);
-          }}
-          handleNextMatch={() => {
-            setMatchIndex(matchIndex + 1);
-            setOpponent(find(teams, ['id', teamProp.nextMatches[matchIndex + 1].competitor.id]));
-          }}
-          handlePrevMatch={() => {
-            setMatchIndex(matchIndex - 1);
-            setOpponent(find(teams, ['id', teamProp.nextMatches[matchIndex - 1].competitor.id]));
-          }}
-          width={width}
-          maps={maps}
-          size={width}
-        />
       </Paper>
     </div>
   );
@@ -224,10 +233,6 @@ SimpleTable.propTypes = {
 
 export default compose(
   withStyles(styles),
-  withWidth(),
-  withState('teamProp', 'setTeam', null),
-  withState('opponent', 'setOpponent', null),
-  withState('matchIndex', 'setMatchIndex', 0),
   withState('stageSelected', 'setStageSelected', 0),
   withState('selectedCols', 'setCols',
     (props) => props.width === 'xs' ? MOBILE_COLS : DEFAULT_COLS

@@ -1,4 +1,9 @@
 import sample from 'lodash/sample';
+import orderBy from 'lodash/orderBy';
+import find from 'lodash/find';
+import filter from 'lodash/filter';
+import without from 'lodash/without';
+import reject from 'lodash/reject';
 
 export const teamsNumbers = [
   'team0',
@@ -123,5 +128,13 @@ export const getTextColor = (hex) => {
   const L = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
   return (L > 0.179) ? '#000000' : '#ffffff';
 }
+
+export const getTeamFromTeams = (teams, team) => find(teams, ['id', team])
+
+export const getTeamMatches = (schedule, team) => schedule.filter(match => match.competitors.some(comp => comp.id === team))
+
+export const getCompetetorTeam = (match, notTeam) => reject(match.competitors, ['id', notTeam])[0]
+
+export const getCompetetor = (teams, match, notTeam) => getTeamFromTeams(teams, getCompetetorTeam(match, notTeam).id)
 
 export const getRandomTeamColor = () => sample(teamColors);

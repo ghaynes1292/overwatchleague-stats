@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose, withProps, withHandlers } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import Dialog from 'material-ui/Dialog';
 import AppBar from 'material-ui/AppBar';
@@ -14,14 +15,17 @@ import GridList, { GridListTile, GridListTileBar } from 'material-ui/GridList';
 import Button from 'material-ui/Button';
 
 import find from 'lodash/find';
+import filter from 'lodash/filter';
 import reduce from 'lodash/reduce';
 import compact from 'lodash/compact';
+import get from 'lodash/get';
+import findIndex from 'lodash/findIndex';
 
 import MatchPreview from './MatchPreview';
 import GameGrid from './GameGrid';
 import { HealerIcon, FlexIcon, DpsIcon, TankIcon } from './RoleIcons';
 
-import { brokenImage, getTextColor } from '../util'
+import { brokenImage, getTextColor, getTeamFromTeams, getTeamMatches, getCompetetor, getCompetetorTeam } from '../util'
 
 const roleMap = {
   support: <HealerIcon />,
@@ -70,8 +74,8 @@ function Transition(props) {
   return <Slide direction="up" {...props} />;
 }
 
-function GetCompletedGamesFromMap(map, team) {
-  const games = reduce(team.completedMatches, (acc, match) => {
+function GetCompletedGamesFromMap(map, team, teamMatches) {
+  const games = reduce(filter(teamMatches, ['state', 'CONCLUDED']), (acc, match) => {
     const updatedMatch = markMapWinner(match, team)
     const rightMap = find(updatedMatch.games, game => {
       return game.attributes.map === map
@@ -97,20 +101,19 @@ function markMapWinner(match, team) {
 
 class TeamDialog extends React.Component {
   render() {
-    const { classes, open, team, width, maps, opponent, nextOpponent, prevOpponent, size, matchIndex, handleNextMatch, handlePrevMatch } = this.props;
-
-    if (!open) {
+    const { classes, width, open, team, opponent, prevOpponent, nextOpponent, teamMapScore, opponentMapScore, schedule, maps, match, prevMatch, nextMatch, handleNextMatch, handlePrevMatch } = this.props;
+    if (!open || !team) {
       return null;
     }
+    console.log('props in team dialog', this.props)
     return (
       <Dialog
         fullScreen
         open={open}
-        onClose={this.handleClose}
         transition={Transition}
       >
         <AppBar className={classes.appBar}>
-          <Toolbar style={{ backgroundColor: team.secondaryColor, color: getTextColor(team.secondaryColor) }}>
+          <Toolbar style={{ backgroundColor: team.colors.secondary.color, color: getTextColor(team.colors.secondary.color) }}>
             <IconButton color="inherit" onClick={this.props.handleClose} aria-label="Close">
               <CloseIcon />
             </IconButton>
@@ -127,47 +130,41 @@ class TeamDialog extends React.Component {
                   <img src={player.headshot} alt={player.name} />
                   <GridListTileBar
                     title={`${player.name}`}
-                    classes={{
-                      root: classes.titleBar,
-                    }}
-                    subtitle={<span>{player.nationality}</span>}
-                    actionIcon={roleMap[player.attributes.role]}
+                    classes={{ root: classes.titleBar }}
+                    actionIcon={roleMap[player.role]}
                   />
                 </GridListTile>
               ))}
             </GridList>
           )}
-          <MatchPreview team={team} opponent={opponent} size={size} matchIndex={matchIndex} />
+          {match && <MatchPreview team={team} opponent={opponent} width={width} match={match} />}
           <div className={classes.buttonContainer}>
-            {matchIndex > 0 && (
-              <Button
-                variant="raised"
-                style={{ backgroundColor: prevOpponent.primaryColor, color: getTextColor(prevOpponent.primaryColor) }}
-                onClick={handlePrevMatch}>
-                  Previous Match
-                  <img className={classes.teamImage} src={prevOpponent.altLogo || prevOpponent.mainLogo}/>
-              </Button>
-            )}
-            {matchIndex < 3 && (
-              <Button
-                variant="raised"
-                style={{ backgroundColor: nextOpponent.primaryColor, color: getTextColor(nextOpponent.primaryColor) }}
-                onClick={handleNextMatch}>
-                  Next Match
-                  <img className={classes.teamImage} src={nextOpponent.altLogo || nextOpponent.mainLogo}/>
-              </Button>
-            )}
+            <Button
+              variant="raised"
+              style={{ backgroundColor: prevOpponent.colors.primary.color, color: getTextColor(prevOpponent.colors.primary.color) }}
+              onClick={handlePrevMatch}>
+                Previous Match
+                <img className={classes.teamImage} src={(prevOpponent.logo.alt|| prevOpponent.logo.main).png} />
+            </Button>
+            <Button
+              variant="raised"
+              style={{ backgroundColor: nextOpponent.colors.primary.color, color: getTextColor(nextOpponent.colors.primary.color) }}
+              onClick={handleNextMatch}>
+                Next Match
+                <img className={classes.teamImage} src={(nextOpponent.logo.alt|| nextOpponent.logo.main).png} />
+            </Button>
           </div>
           <GameGrid
             team={team}
             opponent={opponent}
-            games={team.nextMatches && team.nextMatches[matchIndex].games.map((game, index) => {
-              const map = find(maps, ['id', game.maps])
+            games={match.games.map((game, index) => {
+              console.log('game!', game, this.props)
+              const map = find(maps, ['id', game.attributes.map])
               const icon = map ? map.thumbnail : brokenImage
               const mapName = map ? map.name.en_US : 'No Name'
               return ({
-                team: GetCompletedGamesFromMap(game.maps, team),
-                opponent: GetCompletedGamesFromMap(game.maps, opponent),
+                team: teamMapScore[index],
+                opponent: opponentMapScore[index],
                 icon,
                 mapName,
                 index
@@ -184,4 +181,34 @@ TeamDialog.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(TeamDialog);
+export default compose(
+  withStyles(styles),
+  withProps((props) => {
+    const team = getTeamFromTeams(props.teams, props.team);
+    const teamMatches = getTeamMatches(props.schedule, props.team);
+    const teamMatch = props.match || filter(teamMatches, ['state', 'PENDING'])[0]
+    const opponent = teamMatch && getCompetetor(props.teams, teamMatch, props.team)
+    const opponentMatches = teamMatch && getTeamMatches(props.schedule, opponent.id);
+    const teamMapScore = teamMatch && teamMatch.games.map(game => GetCompletedGamesFromMap(game.attributes.map, team, teamMatches))
+    const opponentMapScore = teamMatch && teamMatch.games.map(game => GetCompletedGamesFromMap(game.attributes.map, opponent, opponentMatches))
+    const prevMatch = teamMatch && get(teamMatches, `[${findIndex(teamMatches, ['id', teamMatch.id]) - 1}]`)
+    const nextMatch = teamMatch && get(teamMatches, `[${findIndex(teamMatches, ['id', teamMatch.id]) + 1}]`)
+    const prevOpponent = prevMatch && getCompetetor(props.teams, prevMatch, props.team)
+    const nextOpponent = nextMatch && getCompetetor(props.teams, nextMatch, props.team)
+    return ({
+      team,
+      match: teamMatch,
+      prevMatch,
+      nextMatch,
+      opponent,
+      prevOpponent,
+      nextOpponent,
+      teamMapScore,
+      opponentMapScore,
+    })
+  }),
+  withHandlers({
+    handlePrevMatch: (props) => (prevMatch) => props.setMatch(props.prevMatch),
+    handleNextMatch: (props) => (nextMatch) => props.setMatch(props.nextMatch)
+  }),
+)(TeamDialog);

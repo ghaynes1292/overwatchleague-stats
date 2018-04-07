@@ -86,19 +86,19 @@ const styles = {
   }
 };
 
-function NextMatch(props) {
-  const { classes, team, opponent, matchIndex, size } = props;
-  const gameTime = moment(team.nextMatches && team.nextMatches[matchIndex].startDate);
+function MatchPreview(props) {
+  const { classes, team, opponent, match, width } = props;
+  const gameTime = moment(match.startDateTS);
   return (
     <div className={classes.headerContainer}>
-      <div className={classes.headerTeam} style={{ backgroundColor: team.primaryColor }}/>
-      <div className={classes.headerOpponent} style={{ backgroundColor: opponent.primaryColor }}/>
+      <div className={classes.headerTeam} style={{ backgroundColor: team.colors.primary.color }}/>
+      <div className={classes.headerOpponent} style={{ backgroundColor: opponent.colors.primary.color }}/>
       <div className={classes.headerGameContainer}>
         <div className={classes.teamHeader}>
-          <div className={classes.teamTitle} style={{ flexDirection: size === 'xs' ? 'column' : 'row' }}>
-            <img className={classes.teamImage} src={team.altLogo || team.mainLogo}/>
-            <Typography variant="title" gutterBottom style={{ color: getTextColor(team.primaryColor) }}>
-              {size === 'xs' ? team.abbreviatedName : team.name}
+          <div className={classes.teamTitle} style={{ flexDirection: width === 'xs' ? 'column' : 'row' }}>
+            <img className={classes.teamImage} src={(team.logo.alt || team.logo.main).png}/>
+            <Typography variant="title" gutterBottom style={{ color: getTextColor(team.colors.primary.color) }}>
+              {width === 'xs' ? team.abbreviatedName : team.name}
             </Typography>
           </div>
           <div className={classes.teamScore}>
@@ -111,10 +111,10 @@ function NextMatch(props) {
             <Typography variant="title" align="center" gutterBottom>
             </Typography>
           </div>
-          <div className={classes.teamTitle} style={{ flexDirection: size === 'xs' ? 'column' : 'row-reverse' }}>
-            <img className={classes.teamImage} src={opponent.altLogo || opponent.mainLogo}/>
-            <Typography variant="title" gutterBottom style={{ color: getTextColor(opponent.primaryColor) }}>
-              {size === 'xs' ? opponent.abbreviatedName : opponent.name}
+          <div className={classes.teamTitle} style={{ flexDirection: width === 'xs' ? 'column' : 'row-reverse' }}>
+            <img className={classes.teamImage} src={(opponent.logo.alt|| opponent.logo.main).png }/>
+            <Typography variant="title" gutterBottom style={{ color: getTextColor(opponent.colors.primary.color) }}>
+              {width === 'xs' ? opponent.abbreviatedName : opponent.name}
             </Typography>
           </div>
         </div>
@@ -149,10 +149,10 @@ function NextMatch(props) {
   );
 }
 
-NextMatch.propTypes = {
+MatchPreview.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
 export default compose(
   withStyles(styles),
-)(NextMatch);
+)(MatchPreview);
