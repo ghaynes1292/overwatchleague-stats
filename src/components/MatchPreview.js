@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
+import moment from 'moment';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 
-import moment from 'moment';
+import findIndex from 'lodash/findIndex';
 
 import { getTextColor } from '../util';
 
@@ -87,33 +88,35 @@ const styles = {
 };
 
 function MatchPreview(props) {
-  const { classes, team, opponent, match, width } = props;
+  const { classes, team, teamScore, opponent, opponentScore, match, width } = props;
   const gameTime = moment(match.startDateTS);
   return (
     <div className={classes.headerContainer}>
       <div className={classes.headerTeam} style={{ backgroundColor: team.colors.primary.color }}/>
       <div className={classes.headerOpponent} style={{ backgroundColor: opponent.colors.primary.color }}/>
       <div className={classes.headerGameContainer}>
-        <div className={classes.teamHeader}>
+        <div className={classes.teamHeader} style={{ color: getTextColor(team.colors.primary.color) }}>
           <div className={classes.teamTitle} style={{ flexDirection: width === 'xs' ? 'column' : 'row' }}>
             <img className={classes.teamImage} src={(team.logo.alt || team.logo.main).png}/>
-            <Typography variant="title" gutterBottom style={{ color: getTextColor(team.colors.primary.color) }}>
+            <Typography variant="title" gutterBottom color="inherit">
               {width === 'xs' ? team.abbreviatedName : team.name}
             </Typography>
           </div>
           <div className={classes.teamScore}>
-            <Typography variant="title" align="center" gutterBottom>
+            <Typography variant="title" align="center" gutterBottom color="inherit">
+              {teamScore}
             </Typography>
           </div>
         </div>
-        <div className={classes.opponentHeader}>
+        <div className={classes.opponentHeader} style={{ color: getTextColor(opponent.colors.primary.color) }}>
           <div className={classes.teamScore}>
-            <Typography variant="title" align="center" gutterBottom>
+            <Typography variant="title" align="center" gutterBottom color="inherit">
+              {opponentScore}
             </Typography>
           </div>
           <div className={classes.teamTitle} style={{ flexDirection: width === 'xs' ? 'column' : 'row-reverse' }}>
             <img className={classes.teamImage} src={(opponent.logo.alt|| opponent.logo.main).png }/>
-            <Typography variant="title" gutterBottom style={{ color: getTextColor(opponent.colors.primary.color) }}>
+            <Typography variant="title" gutterBottom color="inherit">
               {width === 'xs' ? opponent.abbreviatedName : opponent.name}
             </Typography>
           </div>
@@ -155,4 +158,8 @@ MatchPreview.propTypes = {
 
 export default compose(
   withStyles(styles),
+  withProps(({ match, team, opponent }) => ({
+    teamScore: match.scores[findIndex(match.competitors, ['id', team.id])].value,
+    opponentScore: match.scores[findIndex(match.competitors, ['id', opponent.id])].value
+  }))
 )(MatchPreview);

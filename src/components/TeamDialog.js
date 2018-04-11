@@ -161,6 +161,7 @@ class TeamDialog extends React.Component {
               const icon = map ? map.thumbnail : brokenImage
               const mapName = map ? map.name.en_US : 'No Name'
               return ({
+                id: game.id,
                 team: teamMapScore[index],
                 opponent: opponentMapScore[index],
                 icon,

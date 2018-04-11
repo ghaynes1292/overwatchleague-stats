@@ -5,6 +5,9 @@ import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 
+import find from 'lodash/find';
+import get from 'lodash/get';
+
 const styles = {
   root: {
     flex: '1 0 auto',
@@ -37,7 +40,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginRight: '5%',
+    marginRight: '2%',
   },
   opponent: {
     gridArea: 'opponent',
@@ -46,7 +49,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginRight: '5%',
+    marginRight: '2%',
   },
   teamImage: {
     maxWidth: '45px',
@@ -61,11 +64,21 @@ const styles = {
   }
 };
 
+function generateShadow(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  const uicolors = [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
+  const newColors = uicolors.map((color, _, colors) => color === Math.max.apply(null, colors) ? Math.round(color * 1.5) : color)
+  const colorRgb = `${newColors[0]}, ${newColors[1]}, ${newColors[2]}`
+  return `0px 6px 13px -6px rgba(${colorRgb}, 0.5),
+  0px 10px 10px 3px rgba(${colorRgb}, 0.3),
+  0px 8px 12px 7px rgba(${colorRgb}, 0.12)`;
+}
+
 function GameComponent(props) {
   const { classes, game, team, opponent, teamStats, opponentStats } = props;
-
+  const winner = get(find(game.team, ['id', game.id]), 'winner', null)
   return (
-    <Paper className={classes.root} elevation={4}>
+    <Paper className={classes.root} elevation={20} style={{ boxShadow: generateShadow(winner !== null ? winner ? team.colors.primary.color : opponent.colors.primary.color : '#000000')}}>
       <div className={classes.gameThumbnail} style={{ backgroundImage: `url(${game.icon})`.replace(/(["])/, '') }}/>
       <div className={classes.gameDetails}>
         <Typography variant="subheading" gutterBottom>
@@ -76,8 +89,8 @@ function GameComponent(props) {
         </Typography>
       </div>
       <div className={classes.team}>
-        <div style={{ backgroundColor: team.primaryColor }}>
-          <img className={classes.teamImage} src={team.altLogo || team.mainLogo}/>
+        <div style={{ backgroundColor: team.colors.primary.color }}>
+          <img className={classes.teamImage} src={(team.logo.alt || team.logo.main).png}/>
         </div>
         <div className={classes.gameScore}>
           <Typography variant="subheading" gutterBottom>{`W: ${teamStats.wins}`}</Typography>
@@ -86,8 +99,8 @@ function GameComponent(props) {
         </div>
       </div>
       <div className={classes.opponent}>
-        <div style={{ backgroundColor: opponent.primaryColor }}>
-          <img className={classes.teamImage} src={opponent.altLogo || opponent.mainLogo}/>
+        <div style={{ backgroundColor: opponent.colors.primary.color }}>
+          <img className={classes.teamImage} src={(opponent.logo.alt || opponent.logo.main).png}/>
         </div>
         <div className={classes.gameScore}>
           <Typography variant="subheading" gutterBottom>{`W: ${opponentStats.wins}`}</Typography>
