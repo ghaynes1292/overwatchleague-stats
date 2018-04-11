@@ -1,24 +1,6 @@
 import sample from 'lodash/sample';
-import orderBy from 'lodash/orderBy';
 import find from 'lodash/find';
-import filter from 'lodash/filter';
-import without from 'lodash/without';
 import reject from 'lodash/reject';
-
-export const teamsNumbers = [
-  'team0',
-  'team1',
-  'team2',
-  'team3',
-  'team4',
-  'team5',
-  'team6',
-  'team7',
-  'team8',
-  'team9',
-  'team10',
-  'team11',
-];
 
 export const teamIds = [
   '4402',
@@ -49,69 +31,6 @@ const teamColors = [
   { primary: 'aa8a00', secondary: '000000' },
   { primary: 'ff8200', secondary: '59cbe8' },
 ]
-
-export const teamFields = [
-  'abbreviatedName',
-  'addressCountry',
-  'description',
-  'handle',
-  'homeLocation',
-  'id',
-  'name',
-  'placement',
-  'players',
-  'primaryColor',
-  'ranking',
-  'schedule',
-  'secondaryColor',
-  'secondaryPhoto',
-  'type'
-];
-
-export const playerFields = [
-  'accounts',
-  'attributes',
-  'familyName',
-  'givenName',
-  'handle',
-  'headshot',
-  'homeLocation',
-  'id',
-  'name',
-  'nationality',
-  'type'
-];
-
-export const scheduleFields = [
-  'competitors',
-  'conclusionStrategy',
-  'dateCreated',
-  'endDate',
-  'games',
-  'id',
-  'scores',
-  'startDate',
-  'state',
-  'winner',
-];
-
-export const competitorFields = [
-  'abbreviatedName',
-  'icon',
-  'id',
-  'logo',
-  'name',
-  'primaryColor',
-  'secondaryColor',
-  'secondaryColor'
-];
-
-export const gameFields = [
-  'attributes',
-  'id',
-  'points',
-  'state'
-];
 
 export const brokenImage = "https://i.pinimg.com/originals/e5/b3/bf/e5b3bf0dac03331937c2e783a42d5bac.jpg"
 

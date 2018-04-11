@@ -5,7 +5,6 @@ import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import find from 'lodash/find';
-import some from 'lodash/some';
 import moment from 'moment';
 
 const styles = {
@@ -30,7 +29,7 @@ const styles = {
 
 function GameComponent(props) {
   const { classes, matches, liveMatch, teams, setMatch } = props;
-  console.log(props)
+
   return (
     <div className={classes.root}>
       {matches.map(match => {
@@ -43,16 +42,20 @@ function GameComponent(props) {
             onClick={() => setMatch(match, team1.id)}
             elevation={(liveMatch && match.id === liveMatch.id) ? 4 : 0}>
             <div style={{ backgroundColor: team1.colors.primary.color }}>
-              <img width={35} src={team1.logo.main.png}/>
+              <img width={35} src={(team1.logo.alt || team1.logo.main).png}/>
             </div>
             <div className={classes.gameTime}>
-              <span className={classes.liveIndicator}>{(liveMatch && match.id === liveMatch.id) && '●'}</span>
-              <Typography>
-                {moment(match.startDateTS).isBefore(moment()) || (liveMatch && match.id === liveMatch.id)
-                  ? `${liveMatch.scores[0].value || match.scores[0].value} - ${liveMatch.scores[1].value || match.scores[1].value}`
-                  : moment(match.startDateTS).minutes(0).format('hh:mm A')
-                }
-              </Typography>
+              {liveMatch && moment(liveMatch.startDateTS) < moment() && match.id === liveMatch.id
+                ? [
+                  <span className={classes.liveIndicator}>{'●'}</span>,
+                  <Typography>
+                    {liveMatch.scores[0].value} - ${liveMatch.scores[1].value}
+                  </Typography>
+                ]
+                : <Typography>
+                  {moment(match.startDateTS).minutes(0).format('hh:mm A')}
+                </Typography>
+              }
             </div>
             <div style={{ backgroundColor: team2.colors.primary.color }}>
               <img width={35} src={(team2.logo.alt || team2.logo.main).png}/>

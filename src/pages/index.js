@@ -1,22 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, withStateHandlers } from 'recompose';
+import moment from 'moment';
 import { withStyles } from 'material-ui/styles';
 import withWidth from 'material-ui/utils/withWidth';
 import { CircularProgress } from 'material-ui/Progress';
 import Typography from 'material-ui/Typography';
 
-import omit from 'lodash/omit';
-import pick from 'lodash/pick';
-import orderBy from 'lodash/orderBy';
 import filter from 'lodash/filter';
-import find from 'lodash/find';
-import compact from 'lodash/compact';
-import moment from 'moment';
 
 import withRoot from '../withRoot';
-import { teamFields, playerFields, scheduleFields, competitorFields, gameFields, teamsNumbers, teamIds } from '../util';
-
 import TeamTable from '../components/TeamTable';
 import TeamDialog from '../components/TeamDialog';
 import TodaysMatches from '../components/TodaysMatches';
@@ -38,41 +31,6 @@ const styles = theme => ({
     justifyContent: 'space-between'
   }
 });
-
-const getCompletedMatches = (team) =>
-  orderBy(filter(team.schedule, ({ state, conclusionStrategy }) => state === 'CONCLUDED' && conclusionStrategy === 'MINIMUM'), ['startDate'], ['asc'])
-  .map(game => {
-    return ({
-      ...pick(game, ['competitors', 'games', 'startDate', 'endDate', 'id', 'scores', 'bracket']),
-      winner: team.id === game.winner.id
-    })
-  })
-
-const getNextMatches = (team) =>
-  orderBy(filter(team.schedule, ['state', 'PENDING']), ['startDate'], ['asc'])
-  .slice(0, 4)
-  .map(game => {
-    return ({
-      competitor: find(game.competitors, (competitor) => competitor.id !== team.id),
-      games: game.games.map(({ attributes, players, id, state }) => ({ maps: attributes.map, players, id, state })),
-      startDate: game.startDate,
-    })
-  })
-
-const getTeamContent = (team) => {
-  if (!team.content) {
-    return {}
-  }
-  return {
-    primaryColor: find(team.content.colors, ['usage', 'primary']).color.color,
-    secondaryColor: find(team.content.colors, ['usage', 'secondary']).color.color,
-    tertiaryColor: find(team.content.colors, ['usage', 'tertiary']).color.color,
-    mainLogo: find(team.content.icons, ['usage', 'main']).png,
-    altLogo: find(team.content.icons, ['usage', 'alt']) && find(team.content.icons, ['usage', 'alt']).png,
-    nameLogo: find(team.content.icons, ['usage', 'mainName']).png,
-  }
-}
-
 
 const fetchEndpoint = (endpoint) =>
   fetch(`${OWL_API_URL}/${endpoint}`)
@@ -223,9 +181,8 @@ class Index extends React.Component {
 
   render() {
     const { classes, width, open, team, match, toggleDialog, setTeam, setMatch } = this.props;
-    console.log('state:', this.state, this.props)
-
     const { teams, maps, standings, schedule, liveMatch, loading } = this.state;
+
     return (
       <div className={classes.root}>
         {loading || teams.length === 0

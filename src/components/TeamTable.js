@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, withState } from 'recompose';
-import moment from 'moment';
 import { withStyles } from 'material-ui/styles';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
@@ -9,7 +8,6 @@ import orderBy from 'lodash/orderBy';
 import find from 'lodash/find';
 import filter from 'lodash/filter';
 import without from 'lodash/without';
-import reject from 'lodash/reject';
 
 
 import TableMenu from './TableMenu';
@@ -79,12 +77,6 @@ function pastAndFutureMatches(team, schedule, teams) {
   }
 }
 
-function getFuture(team, schedule) {
-  return schedule.filter(match => match.competitors.some(comp => comp.id === team.id))
-  .slice(-6)
-  .map(match => match.winner.id === team.id)
-}
-
 function stageMapper(stage, standings, teams, schedule) {
   const teamRankings = stage === 0
     ? orderBy(standings.overall, ['ranking.matchWin', 'ranking.gameWin'], ['desc', 'desc'])
@@ -97,7 +89,7 @@ function stageMapper(stage, standings, teams, schedule) {
 }
 
 function SimpleTable(props) {
-  const { classes, width, teams, maps, standings, schedule, selectedCols, setCols, stageSelected, setStageSelected, selectTeam, selectMatch } = props;
+  const { classes, width, teams, standings, schedule, selectedCols, setCols, stageSelected, setStageSelected, selectTeam, selectMatch } = props;
 
   const orderedTeams = stageMapper(stageSelected, standings, teams, schedule)
   console.log('width', width)

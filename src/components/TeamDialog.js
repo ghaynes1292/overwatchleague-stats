@@ -25,7 +25,7 @@ import MatchPreview from './MatchPreview';
 import GameGrid from './GameGrid';
 import { HealerIcon, FlexIcon, DpsIcon, TankIcon } from './RoleIcons';
 
-import { brokenImage, getTextColor, getTeamFromTeams, getTeamMatches, getCompetetor, getCompetetorTeam } from '../util'
+import { brokenImage, getTextColor, getTeamFromTeams, getTeamMatches, getCompetetor } from '../util'
 
 const roleMap = {
   support: <HealerIcon />,
@@ -101,7 +101,7 @@ function markMapWinner(match, team) {
 
 class TeamDialog extends React.Component {
   render() {
-    const { classes, width, open, team, opponent, prevOpponent, nextOpponent, teamMapScore, opponentMapScore, schedule, maps, match, prevMatch, nextMatch, handleNextMatch, handlePrevMatch } = this.props;
+    const { classes, width, open, team, opponent, prevOpponent, nextOpponent, teamMapScore, opponentMapScore, maps, match, handleNextMatch, handlePrevMatch } = this.props;
     if (!open || !team) {
       return null;
     }
@@ -182,7 +182,6 @@ TeamDialog.propTypes = {
 export default compose(
   withStyles(styles),
   withProps((props) => {
-    console.log('props on import', props)
     const team = getTeamFromTeams(props.teams, props.team);
     const teamMatches = getTeamMatches(props.schedule, props.team);
     const teamMatch = props.match || filter(teamMatches, ['state', 'PENDING'])[0]
