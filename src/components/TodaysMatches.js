@@ -49,7 +49,7 @@ function GameComponent(props) {
                 ? [
                   <span className={classes.liveIndicator}>{'●'}</span>,
                   <Typography>
-                    {liveMatch.scores[0].value} - ${liveMatch.scores[1].value}
+                    {liveMatch.scores[0].value} - {liveMatch.scores[1].value}
                   </Typography>
                 ]
                 : <Typography>
