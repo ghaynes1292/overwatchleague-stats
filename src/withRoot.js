@@ -1,6 +1,5 @@
 import React from 'react';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import Reboot from 'material-ui/Reboot';
 
 import { getRandomTeamColor } from './util';
 
@@ -25,8 +24,6 @@ function withRoot(Component) {
     // thanks to React context.
     return (
       <MuiThemeProvider theme={theme}>
-        {/* Reboot kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <Reboot />
         <Component {...props} />
       </MuiThemeProvider>
     );
