@@ -1,6 +1,7 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, withStateHandlers } from 'recompose';
+import { compose, withStateHandlers, lifecycle } from 'recompose';
 import moment from 'moment';
 import { withStyles } from 'material-ui/styles';
 import withWidth from 'material-ui/utils/withWidth';
@@ -13,6 +14,7 @@ import withRoot from '../withRoot';
 import TeamTable from '../components/TeamTable';
 import TeamDialog from '../components/TeamDialog';
 import TodaysMatches from '../components/TodaysMatches';
+import ReloadPageSnack from '../components/ReloadPageSnack';
 
 const OWL_API_URL = 'https://api.overwatchleague.com'
 
@@ -135,7 +137,7 @@ class Index extends React.Component {
 
   render() {
     const { classes, width, open, team, match, toggleDialog, setTeam, setMatch } = this.props;
-    const { teams, maps, standings, schedule, liveMatch, loading } = this.state;
+    const { teams, maps, standings, schedule, liveMatch, loading, refresh } = this.state;
 
     return (
       <div className={classes.root}>
@@ -175,6 +177,10 @@ class Index extends React.Component {
                 setMatch={setMatch}
                 width={width}
               />
+              <ReloadPageSnack
+                open={refresh}
+                handleClose={() => { location.reload(); }}
+              />
           </div>
         }
       </div>
@@ -188,11 +194,19 @@ Index.propTypes = {
 
 const IndexComponent = compose(
   withStyles(styles),
-  withStateHandlers(() => ({ open: false, team: null, match: null }),
+  withStateHandlers(() => ({ open: false, team: null, match: null, refresh: false }),
   {
     toggleDialog: ({ open }) => () => ({ open: !open, team: null, match: null }),
     setTeam: () => (team) => ({ team, open: true }),
     setMatch: () => (match, team) => ({ match, team, open: true }),
+    setRefresh: () => (refresh) => ({ refresh }),
+  }),
+  lifecycle({
+    componentWillMount() {
+      document.getElementById('root').addEventListener('sw-update', (e) => {
+        this.props.setRefresh(true);
+      });
+    }
   }),
   withWidth(),
 )(Index)
