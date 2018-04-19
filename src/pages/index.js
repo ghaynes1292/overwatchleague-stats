@@ -125,57 +125,11 @@ class Index extends React.Component {
     this.setState({
       loading: true,
       backgroundLoading: true,
-    })
-    const [standings, teams] = await Promise.all([fetchStandings(), fetchTeams()])
-    this.setState({ standings, teams, loading: false })
-    const [maps, schedule, liveMatch] = await Promise.all([fetchMaps(), fetchSchedule(), fetchLiveMatch()])
-    this.setState({ maps, schedule, liveMatch })
-    // this.setState({
-    //   loading: true,
-    //   backgroundLoading: true,
-    //   loadingText: 'Loading the most up to date stats...',
-    // })
-    // new Promise(resolve => setTimeout(() => this.setState({ loadingText: 'There really is a lot of data...'}), 2200));
-    // new Promise(resolve => setTimeout(() => this.setState({ loadingText: 'Every visit after this is instantaneous!'}), 6000));
-    // const localTeams = teamsNumbers.map((num) => JSON.parse(localStorage.getItem(num)));
-    // const lastFetchedTime = localStorage.getItem('lastFetchedTime')
-    // this.setState({
-    //   loading: false,
-    //   teams: compact(localTeams),
-    //   lastFetchedTime,
-    // })
-    // Promise.all(teamIds.map(competitor =>
-    //   fetchEndpoint(`team/${competitor}?expand=team.content&locale=en_US`)
-    //   .then(team => omit(team, ['attributes', 'advantage', 'aboutUrl', 'accounts', 'availableLanguages']))
-    // )).then(teams => {
-    //   const trimmedTeams = teams.map(team => ({
-    //     ...pick(team, teamFields),
-    //     ...getTeamContent(team),
-    //     players: team.players.map(player => pick(player, playerFields)),
-    //     schedule: team.schedule.map(game => ({
-    //       ...pick(game, scheduleFields),
-    //       competitors: game.competitors.map(competitor => pick(competitor, competitorFields)),
-    //       games: game.games.map(game => pick(game, gameFields)),
-    //     })),
-    //   }))
-    //   const time = moment().format('DD/MM/YYYY HH:MM:SS')
-    //   trimmedTeams.map((team, index) => { localStorage.setItem(`team${index}`, JSON.stringify(team)); })
-    //   localStorage.setItem('lastFetchedTime', time);
-    //   this.setState({ teams: trimmedTeams, backgroundLoading: false, lastFetchedTime: time })
-    // })
-    // fetchEndpoint('maps').then(maps => {
-    //   this.setState({ maps })
-    // });
-    // fetchEndpoint('v2/standings?locale=en_US')
-    // .then((standings) => {
-    //   const stages = standings.data.reduce((acc, value) => ({
-    //     stage1: [...acc.stage1, { ...value, ranking: value.stages.stage1 }],
-    //     stage2: [...acc.stage2, { ...value, ranking: value.stages.stage2 }],
-    //     stage3: [...acc.stage3, { ...value, ranking: value.stages.stage3 }],
-    //     stage4: [...acc.stage4, { ...value, ranking: value.stages.stage4 }],
-    //   }), { stage1: [], stage2: [], stage3: [], stage4: [] });
-    //   this.setState({ standings: stages })
-    // })
+    });
+    const [standings, teams] = await Promise.all([fetchStandings(), fetchTeams()]);
+    this.setState({ standings, teams, loading: false });
+    const [maps, schedule, liveMatch] = await Promise.all([fetchMaps(), fetchSchedule(), fetchLiveMatch()]);
+    this.setState({ maps, schedule, liveMatch });
   }
 
 
