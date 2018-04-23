@@ -34,14 +34,14 @@ const styles = theme => ({
   }
 });
 
-const fetchEndpoint = (endpoint) =>
+const fetchEndpoint = (endpoint, options) =>
   fetch(`${OWL_API_URL}/${endpoint}`)
   .then(resp => resp.json())
   .then(resp => ({ status: 'SUCCESS', data: resp }))
   .catch(error => ({ status: 'FAILURE', data: error }))
 
 function fetchStandings() {
-  return fetchEndpoint('v2/standings?locale=en_US')
+  return fetchEndpoint('v2/standings?locale=en_US',)
   .then((standings) => {
     const stages = standings.data.data.reduce((acc, value) => ({
         overall: [...acc.overall, { id: value.id, ranking: value.league }],
