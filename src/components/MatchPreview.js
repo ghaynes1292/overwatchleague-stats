@@ -121,32 +121,34 @@ function MatchPreview(props) {
             </Typography>
           </div>
         </div>
-        <Paper elevation={4} className={classes.gameStatus}>
-          <div className={classes.hourMinutes}>
-            <Typography variant="headline" gutterBottom align="center">
-              {gameTime.diff(moment(), 'days')}
-            </Typography>
-            <Typography gutterBottom align="center">
-              Days
-            </Typography>
-          </div>
-          <div className={classes.hourMinutes}>
-            <Typography variant="headline" gutterBottom align="center">
-              {gameTime.diff(moment(), 'hours') % 24}
-            </Typography>
-            <Typography gutterBottom align="center">
-              Hours
-            </Typography>
-          </div>
-          <div className={classes.hourMinutes}>
-            <Typography variant="headline" gutterBottom align="center">
-              {gameTime.diff(moment(), 'minutes') % 60}
-            </Typography>
-            <Typography gutterBottom align="center">
-              Mins
-            </Typography>
-          </div>
-        </Paper>
+        {(gameTime.isSame(moment(), 'day') || moment()) < gameTime && (
+          <Paper elevation={4} className={classes.gameStatus}>
+            <div className={classes.hourMinutes}>
+              <Typography variant="headline" gutterBottom align="center">
+                {gameTime.diff(moment(), 'days')}
+              </Typography>
+              <Typography gutterBottom align="center">
+                Days
+              </Typography>
+            </div>
+            <div className={classes.hourMinutes}>
+              <Typography variant="headline" gutterBottom align="center">
+                {gameTime.diff(moment(), 'hours') % 24}
+              </Typography>
+              <Typography gutterBottom align="center">
+                Hours
+              </Typography>
+            </div>
+            <div className={classes.hourMinutes}>
+              <Typography variant="headline" gutterBottom align="center">
+                {gameTime.diff(moment(), 'minutes') % 60}
+              </Typography>
+              <Typography gutterBottom align="center">
+                Mins
+              </Typography>
+            </div>
+          </Paper>
+        )}
       </div>
     </div>
   );
