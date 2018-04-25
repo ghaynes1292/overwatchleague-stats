@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, withProps, withHandlers } from 'recompose';
+import { connect } from 'react-redux'
+import { compose, withHandlers } from 'recompose';
 import { withStyles } from 'material-ui/styles';
-import Dialog from 'material-ui/Dialog';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
 import CloseIcon from 'material-ui-icons/Close';
-import Slide from 'material-ui/transitions/Slide';
 
 import Paper from 'material-ui/Paper';
 import GridList, { GridListTile, GridListTileBar } from 'material-ui/GridList';
@@ -21,11 +20,11 @@ import compact from 'lodash/compact';
 import get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
 
-import MatchPreview from './MatchPreview';
-import GameGrid from './GameGrid';
-import { HealerIcon, FlexIcon, DpsIcon, TankIcon } from './RoleIcons';
+import MatchPreview from '../components/MatchPreview';
+import GameGrid from '../components/GameGrid';
+import { HealerIcon, FlexIcon, DpsIcon, TankIcon } from '../components/RoleIcons';
 
-import { brokenImage, getTextColor, getTeamFromTeams, getTeamMatches, getCompetetor } from '../util'
+import { brokenImage, getTextColor, getTeamMatches, getCompetetor, getTeamFromTeamName } from '../util'
 
 const roleMap = {
   support: <HealerIcon />,
@@ -70,10 +69,6 @@ const styles = {
   }
 };
 
-function Transition(props) {
-  return <Slide direction="up" {...props} />;
-}
-
 function GetCompletedGamesFromMap(map, team, teamMatches) {
   const games = reduce(filter(teamMatches, ['state', 'CONCLUDED']), (acc, match) => {
     const updatedMatch = markMapWinner(match, team)
@@ -93,7 +88,7 @@ function markMapWinner(match, team) {
       const teamWon = game.attributes.mapScore.team1 > game.attributes.mapScore.team2
         ? 'team1'
         : 'team2';
-      return ({ ...game, winner: myTeam === teamWon })
+      return ({ ...game, winner: game.points[0] !== game.points[1] ? myTeam === teamWon : null })
     })
   }
   return newMatch;
@@ -101,19 +96,15 @@ function markMapWinner(match, team) {
 
 class TeamDialog extends React.Component {
   render() {
-    const { classes, width, open, team, opponent, prevOpponent, nextOpponent, teamMapScore, opponentMapScore, maps, match, handleNextMatch, handlePrevMatch } = this.props;
-    if (!open || !team) {
-      return null;
+    const { classes, width, team, opponent, prevOpponent, nextOpponent, teamMapScore, opponentMapScore, maps, teamMatch, handleNextMatch, handlePrevMatch } = this.props;
+    if (!team || !opponent) {
+      return null
     }
     return (
-      <Dialog
-        fullScreen
-        open={open}
-        transition={Transition}
-      >
+      <div>
         <AppBar className={classes.appBar}>
           <Toolbar style={{ backgroundColor: team.colors.secondary.color, color: getTextColor(team.colors.secondary.color) }}>
-            <IconButton color="inherit" onClick={this.props.handleClose} aria-label="Close">
+            <IconButton color="inherit" onClick={() => this.props.history.push(`/`)} aria-label="Close">
               <CloseIcon />
             </IconButton>
             <Typography variant="title" color="inherit">
@@ -136,27 +127,27 @@ class TeamDialog extends React.Component {
               ))}
             </GridList>
           )}
-          {match && <MatchPreview team={team} opponent={opponent} width={width} match={match} />}
+          {teamMatch && <MatchPreview team={team} opponent={opponent} width={width} match={teamMatch} />}
           <div className={classes.buttonContainer}>
             <Button
               variant="raised"
               style={{ backgroundColor: prevOpponent.colors.primary.color, color: getTextColor(prevOpponent.colors.primary.color) }}
               onClick={handlePrevMatch}>
                 Previous Match
-                <img className={classes.teamImage} src={(prevOpponent.logo.alt|| prevOpponent.logo.main).png} />
+                <img className={classes.teamImage} src={(prevOpponent.logo.alt|| prevOpponent.logo.main).png} alt={prevOpponent.abbreviatedName} />
             </Button>
             <Button
               variant="raised"
               style={{ backgroundColor: nextOpponent.colors.primary.color, color: getTextColor(nextOpponent.colors.primary.color) }}
               onClick={handleNextMatch}>
                 Next Match
-                <img className={classes.teamImage} src={(nextOpponent.logo.alt|| nextOpponent.logo.main).png} />
+                <img className={classes.teamImage} src={(nextOpponent.logo.alt|| nextOpponent.logo.main).png} alt={nextOpponent.abbreviatedName} />
             </Button>
           </div>
           <GameGrid
             team={team}
             opponent={opponent}
-            games={match.games.map((game, index) => {
+            games={teamMatch.games.map((game, index) => {
               const map = find(maps, ['id', game.attributes.map])
               const icon = map ? map.thumbnail : brokenImage
               const mapName = map ? map.name.en_US : 'No Name'
@@ -171,7 +162,7 @@ class TeamDialog extends React.Component {
             })}
           />
         </Paper>
-      </Dialog>
+      </div>
     );
   }
 }
@@ -180,34 +171,37 @@ TeamDialog.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
+const mapStateToProps = (state, ownProps) => {
+  const team = getTeamFromTeamName(state.teams.data, ownProps.match.params.abbreviatedName);
+  const teamMatches = team && getTeamMatches(state.schedule.data, team.id);
+  const teamMatch = team && (find(teamMatches, ['id', parseInt(ownProps.match.params.matchId, 10)]) || filter(teamMatches, ['state', 'PENDING'])[0])
+  const opponent = teamMatch && getCompetetor(state.teams.data, teamMatch, team.id)
+  const opponentMatches = teamMatch && getTeamMatches(state.schedule.data, opponent.id);
+  const teamMapScore = teamMatch && teamMatch.games.map(game => GetCompletedGamesFromMap(game.attributes.map, team, teamMatches))
+  const opponentMapScore = teamMatch && teamMatch.games.map(game => GetCompletedGamesFromMap(game.attributes.map, opponent, opponentMatches))
+  const prevMatch = teamMatch && get(teamMatches, `[${findIndex(teamMatches, ['id', teamMatch.id]) - 1}]`)
+  const nextMatch = teamMatch && get(teamMatches, `[${findIndex(teamMatches, ['id', teamMatch.id]) + 1}]`)
+  return {
+    team,
+    teamMatches,
+    teamMatch,
+    opponent,
+    opponentMatches,
+    teamMapScore,
+    opponentMapScore,
+    prevMatch,
+    nextMatch,
+    prevOpponent: prevMatch && getCompetetor(state.teams.data, prevMatch, team.id),
+    nextOpponent: nextMatch && getCompetetor(state.teams.data, nextMatch, team.id),
+    maps: state.maps.data
+  }
+}
+
 export default compose(
+  connect(mapStateToProps),
   withStyles(styles),
-  withProps((props) => {
-    const team = getTeamFromTeams(props.teams, props.team);
-    const teamMatches = getTeamMatches(props.schedule, props.team);
-    const teamMatch = props.match || filter(teamMatches, ['state', 'PENDING'])[0]
-    const opponent = teamMatch && getCompetetor(props.teams, teamMatch, props.team)
-    const opponentMatches = teamMatch && getTeamMatches(props.schedule, opponent.id);
-    const teamMapScore = teamMatch && teamMatch.games.map(game => GetCompletedGamesFromMap(game.attributes.map, team, teamMatches))
-    const opponentMapScore = teamMatch && teamMatch.games.map(game => GetCompletedGamesFromMap(game.attributes.map, opponent, opponentMatches))
-    const prevMatch = teamMatch && get(teamMatches, `[${findIndex(teamMatches, ['id', teamMatch.id]) - 1}]`)
-    const nextMatch = teamMatch && get(teamMatches, `[${findIndex(teamMatches, ['id', teamMatch.id]) + 1}]`)
-    const prevOpponent = prevMatch && getCompetetor(props.teams, prevMatch, props.team)
-    const nextOpponent = nextMatch && getCompetetor(props.teams, nextMatch, props.team)
-    return ({
-      team,
-      match: teamMatch,
-      prevMatch,
-      nextMatch,
-      opponent,
-      prevOpponent,
-      nextOpponent,
-      teamMapScore,
-      opponentMapScore,
-    })
-  }),
   withHandlers({
-    handlePrevMatch: (props) => (prevMatch) => props.setMatch(props.prevMatch, props.team.id),
-    handleNextMatch: (props) => (nextMatch) => props.setMatch(props.nextMatch, props.team.id)
+    handlePrevMatch: (props) => () => props.history.push(`/team/${props.team.abbreviatedName}/${props.prevMatch.id}`),
+    handleNextMatch: (props) => () => props.history.push(`/team/${props.team.abbreviatedName}/${props.nextMatch.id}`),
   }),
 )(TeamDialog);

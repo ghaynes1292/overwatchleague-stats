@@ -88,15 +88,20 @@ function generateOverlay(hex) {
 function GameComponent(props) {
   const { classes, game, team, opponent, teamStats, opponentStats } = props;
   const winner = get(find(game.team, ['id', game.id]), 'winner', null);
-  console.log('winner', team, winner)
   return (
     <Paper className={classes.root} elevation={4}>
       {winner !== null && (
         <div className={classes.winnerOverlay} style={{ backgroundColor: generateOverlay(winner ? team.colors.primary.color : opponent.colors.primary.color) }}>
-          <img className={classes.overlayImage} src={winner ? (team.logo.alt || team.logo.main).png : (opponent.logo.alt || opponent.logo.main).png} />
+          <img
+            className={classes.overlayImage}
+            src={winner ? (team.logo.alt || team.logo.main).png : (opponent.logo.alt || opponent.logo.main).png}
+            alt={team.abbreviatedName}
+          />
         </div>
       )}
-      <div className={classes.gameThumbnail} style={{ backgroundImage: `url(${game.icon})`.replace(/(["])/, '') }}/>
+      <div
+        className={classes.gameThumbnail}
+        style={{ backgroundImage: `url(${game.icon})`.replace(/(["])/, '') }}/>
       <div className={classes.gameDetails}>
         <Typography variant="subheading" gutterBottom>
           {`Game ${game.index + 1}`}
@@ -107,7 +112,7 @@ function GameComponent(props) {
       </div>
       <div className={classes.team}>
         <div style={{ backgroundColor: team.colors.primary.color }}>
-          <img className={classes.teamImage} src={(team.logo.alt || team.logo.main).png}/>
+          <img className={classes.teamImage} src={(team.logo.alt || team.logo.main).png} alt={team.abbreviatedName}/>
         </div>
         <div className={classes.gameScore}>
           <Typography variant="subheading" gutterBottom>{`W: ${teamStats.wins}`}</Typography>
@@ -117,7 +122,7 @@ function GameComponent(props) {
       </div>
       <div className={classes.opponent}>
         <div style={{ backgroundColor: opponent.colors.primary.color }}>
-          <img className={classes.teamImage} src={(opponent.logo.alt || opponent.logo.main).png}/>
+          <img className={classes.teamImage} src={(opponent.logo.alt || opponent.logo.main).png} alt={opponent.abbreviatedName}/>
         </div>
         <div className={classes.gameScore}>
           <Typography variant="subheading" gutterBottom>{`W: ${opponentStats.wins}`}</Typography>

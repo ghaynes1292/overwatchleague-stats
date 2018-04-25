@@ -42,7 +42,7 @@ function GameComponent(props) {
             onClick={() => setMatch(match, team1.id)}
             elevation={(liveMatch && match.id === liveMatch.id) ? 4 : 0}>
             <div style={{ backgroundColor: team1.colors.primary.color }}>
-              <img width={35} src={(team1.logo.alt || team1.logo.main).png}/>
+              <img width={35} src={(team1.logo.alt || team1.logo.main).png} alt={team1.abbreviatedName}/>
             </div>
             <div className={classes.gameTime}>
               {liveMatch && moment(liveMatch.startDateTS) < moment() && match.id === liveMatch.id
@@ -58,7 +58,7 @@ function GameComponent(props) {
               }
             </div>
             <div style={{ backgroundColor: team2.colors.primary.color }}>
-              <img width={35} src={(team2.logo.alt || team2.logo.main).png}/>
+              <img width={35} src={(team2.logo.alt || team2.logo.main).png} alt={team2.abbreviatedName}/>
             </div>
           </Paper>
         )

@@ -3,22 +3,17 @@ import PropTypes from 'prop-types';
 import { compose, withState } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
+import withWidth from 'material-ui/utils/withWidth';
 import Paper from 'material-ui/Paper';
-import orderBy from 'lodash/orderBy';
-import find from 'lodash/find';
-import filter from 'lodash/filter';
 import without from 'lodash/without';
-
 
 import TableMenu from './TableMenu';
 import StagePicker from './StagePicker';
 
-import { getTeamFromTeams, getTeamMatches, getCompetetor } from '../util';
-
 const DEFAULT_COLS = ['Place', 'Team Icon', 'Team Name', 'Match Win', 'Match Loss', 'Win %', 'Past Matches', 'Game Wins', 'Game Loss', 'Diff', 'Next'];
-const DEFAULT_STAGE_COLS = ['Place', 'Team Icon', 'Team Name', 'Match Win', 'Match Loss', 'Win %', 'Game Wins', 'Game Loss', 'Diff'];
+//const DEFAULT_STAGE_COLS = ['Place', 'Team Icon', 'Team Name', 'Match Win', 'Match Loss', 'Win %', 'Game Wins', 'Game Loss', 'Diff'];
 const MOBILE_COLS = ['Team Icon', 'Match Win', 'Match Loss', 'Diff', 'Next'];
-const MOBILE_STAGE_COLS = ['Place', 'Team Icon', 'Team Name', 'Match Win', 'Match Loss', 'Win %', 'Game Wins', 'Game Loss', 'Diff'];
+//const MOBILE_STAGE_COLS = ['Place', 'Team Icon', 'Team Name', 'Match Win', 'Match Loss', 'Win %', 'Game Wins', 'Game Loss', 'Diff'];
 
 const styles = theme => ({
   root: {
@@ -64,48 +59,14 @@ const styles = theme => ({
   }
 });
 
-function pastAndFutureMatches(team, schedule, teams) {
-  const teamMatches = getTeamMatches(schedule, team.id)
-
-  return {
-    pastMatches: filter(teamMatches, ['state', 'CONCLUDED'])
-      .slice(-6)
-      .map(match => match.winner.id === team.id),
-    futureMatches: filter(teamMatches, ['state', 'PENDING'])
-      .slice(0, 2)
-      .map(match => ({ ...getCompetetor(teams, match, team.id), matchId: match.id }))
-  }
-}
-
-function stageMapper(stage, standings, teams, schedule) {
-  const teamRankings = stage === 0
-    ? orderBy(standings.overall, ['ranking.matchWin', 'ranking.gameWin'], ['desc', 'desc'])
-    : orderBy(standings[`stage${stage}`], ['ranking.matchWin', 'ranking.gameWin'], ['desc', 'desc'])
-  return teamRankings.map(team => ({
-    ...team,
-    ...getTeamFromTeams(teams, team.id),
-    ...pastAndFutureMatches(team, schedule, teams)
-  }))
-}
-
 function SimpleTable(props) {
-  const { classes, width, teams, standings, schedule, selectedCols, setCols, stageSelected, setStageSelected, selectTeam, selectMatch } = props;
-
-  const orderedTeams = stageMapper(stageSelected, standings, teams, schedule)
-  console.log('width', width)
+  const { classes, orderedTeams, selectedCols, setCols, stageSelected } = props;
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <StagePicker
           value={stageSelected}
-          handleChange={(i) => {
-            setStageSelected(i);
-            if (width === 'xs') {
-              setCols(i === 0  ? MOBILE_COLS : MOBILE_STAGE_COLS)
-            } else {
-              setCols(i === 0  ? DEFAULT_COLS : DEFAULT_STAGE_COLS)
-            }
-          }}
+          handleChange={(i) => props.history.push(`/stage/${i === 0 ? 'overview' : i}`)}
         />
         <TableMenu
           options={DEFAULT_COLS}
@@ -152,13 +113,11 @@ function SimpleTable(props) {
                   : classes.red
               }
               return (
-                <TableRow key={team.id} className={classes.tableRow} onClick={() => {
-                  selectTeam(team.id)
-                }}>
+                <TableRow key={team.id} className={classes.tableRow} onClick={() => props.history.push(`/team/${team.abbreviatedName}`)}>
                   {selectedCols.includes('Place') && <TableCell padding="dense">{`${index + 1}`}</TableCell>}
                   {selectedCols.includes('Team Icon') &&
                     <TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>
-                      <img width={35} src={team.logo.main.png}/>
+                      <img width={35} src={team.logo.main.png} alt={team.abbreviatedName}/>
                   </TableCell>}
                   {selectedCols.includes('Team Name') && <TableCell>{team.abbreviatedName}</TableCell>}
                   {selectedCols.includes('Match Win') &&
@@ -201,11 +160,8 @@ function SimpleTable(props) {
                           <div
                             key={i}
                             className={classes.iconContainer}
-                            onClick={(e) => {
-                              selectMatch(find(schedule, ['id', match.matchId]), team.id);
-                              e.stopPropagation();
-                            }}>
-                            <img width={35} src={match.logo.main.png}/>
+                            onClick={(e) => {}}>
+                            <img width={35} src={match.logo.main.png} alt={match.abbreviatedName}/>
                           </div>
                         )}
                       </div>
@@ -226,7 +182,7 @@ SimpleTable.propTypes = {
 
 export default compose(
   withStyles(styles),
-  withState('stageSelected', 'setStageSelected', 0),
+  withWidth(),
   withState('selectedCols', 'setCols',
     (props) => props.width === 'xs' ? MOBILE_COLS : DEFAULT_COLS
   ),

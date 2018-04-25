@@ -97,7 +97,7 @@ function MatchPreview(props) {
       <div className={classes.headerGameContainer}>
         <div className={classes.teamHeader} style={{ color: getTextColor(team.colors.primary.color) }}>
           <div className={classes.teamTitle} style={{ flexDirection: width === 'xs' ? 'column' : 'row' }}>
-            <img className={classes.teamImage} src={(team.logo.alt || team.logo.main).png}/>
+            <img className={classes.teamImage} src={(team.logo.alt || team.logo.main).png} alt={team.abbreviatedName}/>
             <Typography variant="title" gutterBottom color="inherit">
               {width === 'xs' ? team.abbreviatedName : team.name}
             </Typography>
@@ -115,7 +115,7 @@ function MatchPreview(props) {
             </Typography>
           </div>
           <div className={classes.teamTitle} style={{ flexDirection: width === 'xs' ? 'column' : 'row-reverse' }}>
-            <img className={classes.teamImage} src={(opponent.logo.alt|| opponent.logo.main).png }/>
+            <img className={classes.teamImage} src={(opponent.logo.alt|| opponent.logo.main).png } alt={opponent.abbreviatedName}/>
             <Typography variant="title" gutterBottom color="inherit">
               {width === 'xs' ? opponent.abbreviatedName : opponent.name}
             </Typography>

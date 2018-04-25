@@ -30,7 +30,7 @@ const teamColors = [
   { primary: 'd22630', secondary: '000000' },
   { primary: 'aa8a00', secondary: '000000' },
   { primary: 'ff8200', secondary: '59cbe8' },
-]
+];
 
 export const brokenImage = "https://i.pinimg.com/originals/e5/b3/bf/e5b3bf0dac03331937c2e783a42d5bac.jpg"
 
@@ -41,12 +41,14 @@ export const getTextColor = (hex) => {
     if (c <= 0.03928) {
       return c / 12.92;
     } else {
-      return Math.pow((c + 0.055) / 1.055,2.4);
+      return Math.pow((c + 0.055) / 1.055, 2.4);
     }
   });
   const L = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
   return (L > 0.179) ? '#000000' : '#ffffff';
 }
+
+export const getTeamFromTeamName = (teams, team) => find(teams, ['abbreviatedName', team])
 
 export const getTeamFromTeams = (teams, team) => find(teams, ['id', team])
 
