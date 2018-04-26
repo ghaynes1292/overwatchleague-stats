@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux'
 import { compose, withHandlers } from 'recompose';
 import { withStyles } from 'material-ui/styles';
+import withWidth from 'material-ui/utils/withWidth';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import IconButton from 'material-ui/IconButton';
@@ -204,4 +205,5 @@ export default compose(
     handlePrevMatch: (props) => () => props.history.push(`/team/${props.team.abbreviatedName}/${props.prevMatch.id}`),
     handleNextMatch: (props) => () => props.history.push(`/team/${props.team.abbreviatedName}/${props.nextMatch.id}`),
   }),
+  withWidth(),
 )(TeamDialog);

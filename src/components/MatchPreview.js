@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, withProps } from 'recompose';
 import moment from 'moment';
+import withWidth from 'material-ui/utils/withWidth';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
@@ -163,5 +164,6 @@ export default compose(
   withProps(({ match, team, opponent }) => ({
     teamScore: match.scores[findIndex(match.competitors, ['id', team.id])].value,
     opponentScore: match.scores[findIndex(match.competitors, ['id', opponent.id])].value
-  }))
+  })),
+  withWidth(),
 )(MatchPreview);

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withStyles } from 'material-ui/styles';
+import withWidth from 'material-ui/utils/withWidth';
 
 import filter from 'lodash/filter';
 
@@ -32,12 +33,12 @@ function getGameStats(team) {
 }
 
 function GameGrid(props) {
-  const { classes, games, team, opponent } = props;
+  const { classes, width, games, team, opponent } = props;
   if (!games) {
     return null;
   }
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{ flexDirection: width === 'xs' ? 'column' : 'row' }}>
       {games.map(game => {
         const teamStats = getGameStats(game.team)
         const opponentStats = getGameStats(game.opponent)
@@ -62,4 +63,5 @@ GameGrid.propTypes = {
 
 export default compose(
   withStyles(styles),
+  withWidth(),
 )(GameGrid);
