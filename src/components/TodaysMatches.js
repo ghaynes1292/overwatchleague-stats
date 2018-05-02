@@ -32,7 +32,19 @@ const styles = {
 function GameComponent(props) {
   const { classes, matches, liveMatch, teams, setMatch } = props;
   const currentMatch = liveMatch && liveMatch.liveMatch;
-  console.log('props', props)
+
+  const renderPrevMatch = (match) => (<Typography>
+    {match.scores[0].value} - {match.scores[1].value}
+  </Typography>)
+  const renderOngoingMatch = (currentMatch) => [
+    <span key="live-indicator" className={classes.liveIndicator}>{'●'}</span>,
+    <Typography key="text">
+      {currentMatch.scores[0].value} - {currentMatch.scores[1].value}
+    </Typography>
+  ];
+  const renderFutureMatch = (match) => (<Typography>
+    {moment(match.startDateTS).minutes(0).format('hh:mm A')}
+  </Typography>)
   return (
     <div className={classes.root}>
       {matches.map(match => {
@@ -48,16 +60,9 @@ function GameComponent(props) {
               <img width={35} src={(team1.logo.alt || team1.logo.main).png} alt={team1.abbreviatedName}/>
             </div>
             <div className={classes.gameTime}>
-              {currentMatch && moment(currentMatch.startDateTS) < moment() && match.id === currentMatch.id
-                ? [
-                  <span className={classes.liveIndicator}>{'●'}</span>,
-                  <Typography>
-                    {currentMatch.scores[0].value} - {currentMatch.scores[1].value}
-                  </Typography>
-                ]
-                : <Typography>
-                  {moment(match.startDateTS).minutes(0).format('hh:mm A')}
-                </Typography>
+              {currentMatch && moment(match.startDateTS) < moment()
+                ? currentMatch.id === match.id ? renderOngoingMatch(currentMatch) : renderPrevMatch(match)
+                : renderFutureMatch(match)
               }
             </div>
             <div style={{ backgroundColor: team2.colors.primary.color }}>
