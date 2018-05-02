@@ -31,7 +31,7 @@ workbox.routing.registerRoute(
 );
 
 workbox.routing.registerRoute(
-  new RegExp('https://api.overwatchleague.com/(?:live-match|v2/standings)(.*)'),
+  new RegExp('https://api.overwatchleague.com/(?:live-match|v2/standings|schedule)(.*)'),
   workbox.strategies.networkFirst({
     cacheName: 'overwatch-short-cache',
     plugins: [
@@ -43,7 +43,7 @@ workbox.routing.registerRoute(
 );
 
 workbox.routing.registerRoute(
-  new RegExp('https://api.overwatchleague.com/(?:maps|schedule|v2/teams)(.*)'),
+  new RegExp('https://api.overwatchleague.com/(?:maps|v2/teams)(.*)'),
   workbox.strategies.cacheFirst({
     cacheName: 'overwatch-long-cache',
     plugins: [

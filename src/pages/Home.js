@@ -43,9 +43,7 @@ const Index = (props) => {
           <CircularProgress className={classes.progress} size={50} />
         </div>
         : <div>
-            {todaysMatches.status === 'FULFULLED' && (
-              <TodaysMatches />
-            )}
+            <TodaysMatches />
             <TeamTableContainer
               stage={props.match.params.stage}
               history={props.history}
@@ -62,7 +60,6 @@ Index.propTypes = {
 
 const mapStateToProps = (state) => ({
   loading: state.standings.status === 'PENDING' || state.teams.status === 'PENDING',
-  todaysMatches: state.liveMatch
 });
 
 
