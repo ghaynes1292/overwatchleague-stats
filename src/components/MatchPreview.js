@@ -122,7 +122,7 @@ function MatchPreview(props) {
             </Typography>
           </div>
         </div>
-        {(gameTime.isSame(moment(), 'day') || moment()) < gameTime && (
+        {gameTime > moment() && (
           <Paper elevation={4} className={classes.gameStatus}>
             <div className={classes.hourMinutes}>
               <Typography variant="headline" gutterBottom align="center">
