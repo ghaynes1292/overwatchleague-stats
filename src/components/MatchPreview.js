@@ -103,18 +103,22 @@ function MatchPreview(props) {
               {width === 'xs' ? team.abbreviatedName : team.name}
             </Typography>
           </div>
-          <div className={classes.teamScore}>
-            <Typography variant="title" align="center" gutterBottom color="inherit">
-              {teamScore}
-            </Typography>
-          </div>
+          {gameTime < moment() && (
+            <div className={classes.teamScore}>
+              <Typography variant="title" align="center" gutterBottom color="inherit">
+                {teamScore}
+              </Typography>
+            </div>
+          )}
         </div>
         <div className={classes.opponentHeader} style={{ color: getTextColor(opponent.colors.primary.color) }}>
-          <div className={classes.teamScore}>
-            <Typography variant="title" align="center" gutterBottom color="inherit">
-              {opponentScore}
-            </Typography>
-          </div>
+          {gameTime < moment() && (
+            <div className={classes.teamScore}>
+              <Typography variant="title" align="center" gutterBottom color="inherit">
+                {opponentScore}
+              </Typography>
+            </div>
+          )}
           <div className={classes.teamTitle} style={{ flexDirection: width === 'xs' ? 'column' : 'row-reverse' }}>
             <img className={classes.teamImage} src={(opponent.logo.alt|| opponent.logo.main).png } alt={opponent.abbreviatedName}/>
             <Typography variant="title" gutterBottom color="inherit">
