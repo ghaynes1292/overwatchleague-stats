@@ -43,7 +43,9 @@ const Index = (props) => {
           <CircularProgress className={classes.progress} size={50} />
         </div>
         : <div>
-            <TodaysMatches />
+            <TodaysMatches
+              history={props.history}
+            />
             <TeamTableContainer
               stage={props.match.params.stage}
               history={props.history}

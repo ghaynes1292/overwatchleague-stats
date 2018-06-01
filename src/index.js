@@ -14,7 +14,6 @@ import { fetchStandings } from './actions/standings';
 import { fetchTeams } from './actions/teams';
 import { fetchLiveMatch } from './actions/liveMatch';
 import { fetchMaps } from './actions/maps';
-import { fetchSchedule } from './actions/schedule';
 
 import registerServiceWorker from './registerServiceWorker';
 
@@ -28,7 +27,6 @@ store.dispatch(fetchStandings());
 store.dispatch(fetchTeams());
 store.dispatch(fetchLiveMatch());
 store.dispatch(fetchMaps());
-store.dispatch(fetchSchedule());
 
 const App = () => (
   <Router>

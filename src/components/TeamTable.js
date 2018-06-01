@@ -113,7 +113,11 @@ function SimpleTable(props) {
                   : classes.red
               }
               return (
-                <TableRow key={team.id} className={classes.tableRow} onClick={() => props.history.push(`/team/${team.abbreviatedName}`)}>
+                <TableRow
+                  key={team.id}
+                  className={classes.tableRow}
+                  onClick={() => props.history.push(`/team/${team.abbreviatedName}`)}
+                  >
                   {selectedCols.includes('Place') && <TableCell padding="dense">{`${index + 1}`}</TableCell>}
                   {selectedCols.includes('Team Icon') &&
                     <TableCell padding="dense" classes={{ paddingDense: classes.paddingDense }}>

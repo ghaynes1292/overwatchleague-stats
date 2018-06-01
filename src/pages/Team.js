@@ -115,7 +115,10 @@ class TeamDialog extends React.Component {
         </AppBar>
         <Paper className={classes.root}>
           {team.players && (
-            <GridList cellHeight={125} className={classes.gridList} cols={width === 'xs' ? 3.5 : 6.5}>
+            <GridList
+              cellHeight={125}
+              className={classes.gridList}
+              cols={width === 'xs' ? 3.5 : 6.5}>
               {team.players.map(player => (
                 <GridListTile key={player.id} classes={{ imgFullWidth: classes.imageTile }}>
                   <img src={player.headshot} alt={player.name} />
