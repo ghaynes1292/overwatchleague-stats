@@ -19,8 +19,8 @@ function pastAndFutureMatches(team, schedule, teams) {
 
 function stageMapper(stage, standings, teams, schedule) {
   const teamRankings = stage === 'overview'
-    ? orderBy(standings.overall, ['ranking.matchWin', 'ranking.gameWin'], ['desc', 'desc'])
-    : orderBy(standings[`stage${stage}`], ['ranking.matchWin', 'ranking.gameWin'], ['desc', 'desc'])
+    ? orderBy(standings.overall, ['ranking.matchWin', 'ranking.gameWin', 'ranking.gameLoss'], ['desc', 'desc', 'asc'])
+    : orderBy(standings[`stage${stage}`], ['ranking.matchWin', 'ranking.gameWin', 'ranking.gameLoss'], ['desc', 'desc', 'asc'])
   return teamRankings.map(team => ({
     ...team,
     ...getTeamFromTeams(teams, team.id),

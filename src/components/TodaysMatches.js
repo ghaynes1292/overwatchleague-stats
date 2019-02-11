@@ -4,11 +4,12 @@ import { connect } from 'react-redux'
 import { compose, lifecycle } from 'recompose';
 import { withStyles } from 'material-ui/styles';
 import withWidth from 'material-ui/utils/withWidth';
-import GridList, { GridListTile, GridListTileBar } from 'material-ui/GridList';
+import GridList, { GridListTile } from 'material-ui/GridList';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import find from 'lodash/find';
 import filter from 'lodash/filter';
+import isEmpty from 'lodash/isEmpty';
 import moment from 'moment';
 
 import { fetchSchedule } from '../actions/schedule';
@@ -37,7 +38,7 @@ const styles = {
 };
 
 function GameComponent(props) {
-  const { classes, width, matches, liveMatch, teams, setMatch } = props;
+  const { classes, matches, liveMatch, teams } = props;
   const currentMatch = liveMatch && liveMatch.liveMatch;
 
   const renderPrevMatch = (match) => (<Typography>
@@ -110,9 +111,11 @@ function componentDidMount() {
   this.props.fetchSchedule()
   .then(resp => {
     const todaysMatches = filter(resp.value, match => moment(match.startDateTS).isSame(moment(), 'day'));
-    var myElement = document.getElementById(`match_${todaysMatches[0].id}`);
-    var topPos = myElement.offsetLeft;
-    document.getElementById('matches_list').scrollLeft = topPos;
+    if (!isEmpty(todaysMatches)) {
+      var myElement = document.getElementById(`match_${todaysMatches[0].id}`);
+      var topPos = myElement.offsetLeft;
+      document.getElementById('matches_list').scrollLeft = topPos;
+    }
   })
 }
 

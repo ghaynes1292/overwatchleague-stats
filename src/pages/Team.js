@@ -98,6 +98,7 @@ function markMapWinner(match, team) {
 class TeamDialog extends React.Component {
   render() {
     const { classes, width, team, opponent, prevOpponent, nextOpponent, teamMapScore, opponentMapScore, maps, teamMatch, handleNextMatch, handlePrevMatch } = this.props;
+    console.log('team', this.props)
     if (!team || !opponent) {
       return null
     }
@@ -133,20 +134,24 @@ class TeamDialog extends React.Component {
           )}
           {teamMatch && <MatchPreview team={team} opponent={opponent} width={width} match={teamMatch} />}
           <div className={classes.buttonContainer}>
-            <Button
-              variant="raised"
-              style={{ backgroundColor: prevOpponent.colors.primary.color, color: getTextColor(prevOpponent.colors.primary.color) }}
-              onClick={handlePrevMatch}>
-                Previous Match
-                <img className={classes.teamImage} src={(prevOpponent.logo.alt|| prevOpponent.logo.main).png} alt={prevOpponent.abbreviatedName} />
-            </Button>
-            <Button
-              variant="raised"
-              style={{ backgroundColor: nextOpponent.colors.primary.color, color: getTextColor(nextOpponent.colors.primary.color) }}
-              onClick={handleNextMatch}>
-                Next Match
-                <img className={classes.teamImage} src={(nextOpponent.logo.alt|| nextOpponent.logo.main).png} alt={nextOpponent.abbreviatedName} />
-            </Button>
+            {prevOpponent && (
+              <Button
+                variant="raised"
+                style={{ backgroundColor: prevOpponent.colors.primary.color, color: getTextColor(prevOpponent.colors.primary.color) }}
+                onClick={handlePrevMatch}>
+                  Previous Match
+                  <img className={classes.teamImage} src={(prevOpponent.logo.alt|| prevOpponent.logo.main).png} alt={prevOpponent.abbreviatedName} />
+              </Button>
+            )}
+            {nextOpponent && (
+              <Button
+                variant="raised"
+                style={{ backgroundColor: nextOpponent.colors.primary.color, color: getTextColor(nextOpponent.colors.primary.color) }}
+                onClick={handleNextMatch}>
+                  Next Match
+                  <img className={classes.teamImage} src={(nextOpponent.logo.alt|| nextOpponent.logo.main).png} alt={nextOpponent.abbreviatedName} />
+              </Button>
+            )}
           </div>
           <GameGrid
             team={team}
