@@ -28,7 +28,7 @@
     "html-webpack-plugin": "2.29.0",
     "jest": "20.0.4",
     "lodash": "^4.17.5",
-    "material-ui": "next",
+    "material-ui": "1.0.0-beta.42",
     "material-ui-icons": "^1.0.0-beta.36",
     "moment": "^2.21.0",
     "object-assign": "4.1.1",
