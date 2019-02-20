@@ -10,6 +10,7 @@ import Typography from 'material-ui/Typography';
 import find from 'lodash/find';
 import filter from 'lodash/filter';
 import isEmpty from 'lodash/isEmpty';
+import orderBy from 'lodash/orderBy';
 import moment from 'moment';
 
 import { fetchSchedule } from '../actions/schedule';
@@ -51,7 +52,7 @@ function GameComponent(props) {
     </Typography>
   ];
   const renderFutureMatch = (match) => (<Typography>
-    {moment(match.startDateTS).minutes(0).format('hh:mm A')}
+    {moment(match.startDateTS).minutes(0).format('MM/DD h A')}
   </Typography>)
   return (
     <GridList
@@ -110,7 +111,7 @@ const mapDispatchToProps = {
 function componentDidMount() {
   this.props.fetchSchedule()
   .then(resp => {
-    const todaysMatches = filter(resp.value, match => moment(match.startDateTS).isSame(moment(), 'day'));
+    const todaysMatches = filter(resp.value, (match) => match.state !== 'CONCLUDED' && moment(match.startDateTS).isSame(moment(), 'week'));
     if (!isEmpty(todaysMatches)) {
       var myElement = document.getElementById(`match_${todaysMatches[0].id}`);
       var topPos = myElement.offsetLeft;

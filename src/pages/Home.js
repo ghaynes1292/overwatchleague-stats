@@ -68,12 +68,6 @@ const mapStateToProps = (state) => ({
 const IndexComponent = compose(
   connect(mapStateToProps),
   withStyles(styles),
-  withStateHandlers(() => ({ open: false, team: null, matchId: null, refresh: false }),
-  {
-    toggleDialog: ({ open }) => () => ({ open: !open, team: null, matchId: null }),
-    setTeam: () => (team) => ({ team, open: true }),
-    setMatch: () => (matchId, team) => ({ matchId, team, open: true }),
-  }),
   withWidth(),
 )(Index)
 

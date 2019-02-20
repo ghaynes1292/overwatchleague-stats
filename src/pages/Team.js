@@ -98,7 +98,6 @@ function markMapWinner(match, team) {
 class TeamDialog extends React.Component {
   render() {
     const { classes, width, team, opponent, prevOpponent, nextOpponent, teamMapScore, opponentMapScore, maps, teamMatch, handleNextMatch, handlePrevMatch } = this.props;
-    console.log('team', this.props)
     if (!team || !opponent) {
       return null
     }
@@ -157,7 +156,7 @@ class TeamDialog extends React.Component {
             team={team}
             opponent={opponent}
             games={teamMatch.games.map((game, index) => {
-              const map = find(maps, ['id', game.attributes.map])
+              const map = find(maps, ['guid', game.attributes.mapGuid])
               const icon = map ? map.thumbnail : brokenImage
               const mapName = map ? map.name.en_US : 'No Name'
               return ({
